@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Touch.ServiceModel</id>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <authors>Artem Abashev</authors>
         <projectUrl>https://github.com/Touch-SDK/Touch.Service</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -14,5 +14,6 @@
     <files>
         <file src="bin\Release\Touch.ServiceModel.dll" target="lib\Touch.ServiceModel.dll" />
         <file src="bin\Release\Touch.ServiceModel.pdb" target="lib\Touch.ServiceModel.pdb" />
+        <file src="bin\Release\Touch.ServiceModel.XML" target="lib\Touch.ServiceModel.XML" />
     </files>
 </package>

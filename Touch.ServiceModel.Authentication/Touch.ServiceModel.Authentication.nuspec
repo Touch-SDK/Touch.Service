@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Touch.ServiceModel.Authentication</id>
+        <version>1.0.0</version>
+        <authors>Artem Abashev</authors>
+        <projectUrl>https://github.com/Touch-SDK/Touch.Service</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Touch SDK service OAuth support.</description>
+        <dependencies>
+            <dependency id="Touch" version="1.0.2" />
+            <dependency id="Touch.ServiceModel" version="1.0.1" />
+            <dependency id="DevDefined.OAuth" version="0.1" />
+            <dependency id="Touch.Business.Authentication" version="1.0.2" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\Touch.ServiceModel.Authentication.dll" target="lib\Touch.ServiceModel.Authentication.dll" />
+        <file src="bin\Release\Touch.ServiceModel.Authentication.pdb" target="lib\Touch.ServiceModel.Authentication.pdb" />
+        <file src="bin\Release\Touch.ServiceModel.Authentication.XML" target="lib\Touch.ServiceModel.Authentication.XML" />
+    </files>
+</package>

@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.ServiceModel", "Touch.ServiceModel\Touch.ServiceModel.csproj", "{9A5BBDD8-28A5-40CF-8AFD-8A8A81D0E130}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.Messaging.PushSharp", "Touch.Messaging.PushSharp\Touch.Messaging.PushSharp.csproj", "{65359F18-2C6B-4F77-8317-626367C165D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9A5BBDD8-28A5-40CF-8AFD-8A8A81D0E130}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A5BBDD8-28A5-40CF-8AFD-8A8A81D0E130}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A5BBDD8-28A5-40CF-8AFD-8A8A81D0E130}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65359F18-2C6B-4F77-8317-626367C165D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65359F18-2C6B-4F77-8317-626367C165D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65359F18-2C6B-4F77-8317-626367C165D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65359F18-2C6B-4F77-8317-626367C165D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

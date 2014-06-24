@@ -2,6 +2,7 @@
 using DevDefined.OAuth.Framework;
 using DevDefined.OAuth.Storage;
 using DevDefined.OAuth.Utility;
+using DevDefined.OAuth.Consumer;
 using Touch.Domain;
 using Touch.Logic;
 using AccessToken = DevDefined.OAuth.Storage.Basic.AccessToken;
@@ -190,8 +191,8 @@ namespace Touch.ServiceModel.OAuth
 
                 var result = new RequestToken
                 {
-                    AccessDenied = requestToken.Status == RequestTokenStatuses.Denied,
-                    UsedUp = requestToken.Status == RequestTokenStatuses.UsedUp,
+                    AccessDenied = string.Compare(requestToken.Status, "Denied", true) == 0,
+                    UsedUp = string.Compare(requestToken.Status, "UsedUp", true) == 0,
                     ConsumerKey = requestToken.Consumer,
                     Token = requestToken.HashKey,
                     TokenSecret = requestToken.Secret,

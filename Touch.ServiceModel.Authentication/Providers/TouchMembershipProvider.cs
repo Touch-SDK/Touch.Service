@@ -17,7 +17,7 @@ namespace Touch.Providers
     /// <summary>
     /// Membership provider base.
     /// </summary>
-    public sealed class TouchMembershipProvider : MembershipProvider
+    public class TouchMembershipProvider : MembershipProvider
     {
         #region .ctor
         public TouchMembershipProvider()

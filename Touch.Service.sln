@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.ServiceModel", "Touch.ServiceModel\Touch.ServiceModel.csproj", "{9A5BBDD8-28A5-40CF-8AFD-8A8A81D0E130}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.ServiceModel.Authentication", "Touch.ServiceModel.Authentication\Touch.ServiceModel.Authentication.csproj", "{E8EAC68D-709E-4E36-A8BE-B301030286B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageResizer.Touch", "ImageResizer.Touch\ImageResizer.Touch.csproj", "{146C9D0F-A47E-4923-9F27-D00F3FB520C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{E8EAC68D-709E-4E36-A8BE-B301030286B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8EAC68D-709E-4E36-A8BE-B301030286B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8EAC68D-709E-4E36-A8BE-B301030286B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{146C9D0F-A47E-4923-9F27-D00F3FB520C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{146C9D0F-A47E-4923-9F27-D00F3FB520C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{146C9D0F-A47E-4923-9F27-D00F3FB520C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{146C9D0F-A47E-4923-9F27-D00F3FB520C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

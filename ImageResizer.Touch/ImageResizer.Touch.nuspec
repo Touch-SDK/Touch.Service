@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>ImageResizer.Touch</id>
+        <version>1.0.0</version>
+        <authors>Artem Abashev</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Touch SDK ImageResizer plug-in.</description>
+        <dependencies>
+            <dependency id="AWSSDK" version="2.1.4.0" />
+            <dependency id="ImageResizer" version="3.4.3" />
+            <dependency id="Touch" version="1.0.5" />
+            <dependency id="Touch.ServiceModel" version="1.0.1" />
+        </dependencies>
+        <references />
+    </metadata>
+    <files />
+</package>

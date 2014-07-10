@@ -2,15 +2,16 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>ImageResizer.Touch</id>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <authors>Artem Abashev</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Touch SDK ImageResizer plug-in.</description>
         <dependencies>
             <dependency id="AWSSDK" version="2.1.4.0" />
             <dependency id="ImageResizer" version="3.4.3" />
-            <dependency id="Touch" version="1.0.5" />
-            <dependency id="Touch.ServiceModel" version="1.0.1" />
+            <dependency id="Touch" version="1.0.6" />
+            <dependency id="Touch.ServiceModel" version="1.0.2" />
+            <dependency id="Touch.Storage.Aws" version="1.0.4" />
         </dependencies>
     </metadata>
     <files>

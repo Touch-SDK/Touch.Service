@@ -5,6 +5,7 @@ using System.Web.Caching;
 using System.Web.Hosting;
 using Amazon.S3;
 using ImageResizer.Util;
+using Touch.Storage;
 
 namespace ImageResizer.Plugins.TouchThumbnail
 {
@@ -15,7 +16,7 @@ namespace ImageResizer.Plugins.TouchThumbnail
     {
         private string _virtualFilesystemPrefix;
 
-        public string Bucket { get; set; }
+        public Bucket Bucket { get; set; }
 
         public string[] SupportedFormats { get; set; }
 
@@ -36,11 +37,6 @@ namespace ImageResizer.Plugins.TouchThumbnail
                 _virtualFilesystemPrefix = PathUtils.ResolveAppRelativeAssumeAppRelative(value);
             }
         }
-
-        /// <summary>
-        /// Gets and sets the AmazonS3Client object that specifies connection details such as authentication, encryption, etc.
-        /// </summary>
-        internal AmazonS3Client S3Client { get; set; }
 
         public bool FileExists(string virtualPath, NameValueCollection queryString)
         {

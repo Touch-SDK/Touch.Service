@@ -6,6 +6,7 @@ using System.Security;
 using System.Web;
 using System.Web.Hosting;
 using Amazon;
+using Amazon.Runtime;
 using Amazon.S3;
 using ImageResizer.Caching;
 using ImageResizer.Configuration;
@@ -20,7 +21,6 @@ namespace ImageResizer.Plugins.TouchThumbnail
     sealed public class TouchThumbnail : IPlugin, IMultiInstancePlugin, IRedactDiagnostics
     {
         private readonly string _vpath;
-        private readonly string _bucket;
         private readonly string _pathPrefix;
         private readonly string[] _supportedFormats = new[] { "jpg" };
         private readonly string[] _rawFormats = new string[] { "swf", "pdf", "mp3" };
@@ -32,7 +32,7 @@ namespace ImageResizer.Plugins.TouchThumbnail
                                                                         };
         private const string DefaultContentType = "application/octet-stream";
         private readonly string[][] _defaults;
-        private readonly AmazonS3Client _s3Client;
+        private readonly Bucket _bucket;
 
         private TouchThumbnailPathProvider _vpp;
 
@@ -57,23 +57,13 @@ namespace ImageResizer.Plugins.TouchThumbnail
             if (string.IsNullOrEmpty(connectionString))
                 throw new ConfigurationErrorsException(connectionString + " connection string is not set.");
 
-            var bucketConfig = new StorageConnectionStringBuilder { ConnectionString = connectionString };
-
-            _bucket = bucketConfig.Bucket;
+            var bucketConfig = new AwsStorageConnectionStringBuilder { ConnectionString = connectionString };
             _pathPrefix = bucketConfig.Path;
-
-            if (string.IsNullOrEmpty(_bucket))
-                throw new ConfigurationErrorsException("Bucket name is not set in connection string " + connectionString);
 
             if (string.IsNullOrEmpty(bucketConfig.Region))
                 throw new ConfigurationErrorsException("Bucketregion  is not set in connection string " + connectionString);
 
-            var s3Config = new AmazonS3Config
-            {
-                RegionEndpoint = RegionEndpoint.GetBySystemName(bucketConfig.Region)
-            };
-
-            _s3Client = new AmazonS3Client(EnvironmentValues.AwsKey, EnvironmentValues.AwsSecret, s3Config);
+            _bucket = new Bucket(connectionString, new BasicAWSCredentials(EnvironmentValues.AwsKey, EnvironmentValues.AwsSecret));
 
             if (!string.IsNullOrEmpty(args["defaults"]))
                 _defaults = args["defaults"].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(pair => pair.Split(new[] { '=' })).Take(2).ToArray();
@@ -86,7 +76,6 @@ namespace ImageResizer.Plugins.TouchThumbnail
             _vpp = new TouchThumbnailPathProvider
             {
                 Bucket = _bucket,
-                S3Client = _s3Client,
                 VirtualFilesystemPrefix = _vpath,
                 SupportedFormats = _supportedFormats,
                 RawFormats = _rawFormats,

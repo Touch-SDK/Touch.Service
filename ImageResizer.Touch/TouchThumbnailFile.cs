@@ -7,19 +7,20 @@ using System.Web.Hosting;
 using Amazon.S3;
 using Amazon.S3.Model;
 using ImageResizer.ExtensionMethods;
+using Touch.Storage;
 
 namespace ImageResizer.Plugins.TouchThumbnail
 {
     sealed public class TouchThumbnailFile : VirtualFile, IVirtualFileWithModifiedDate, IVirtualFileSourceCacheKey
     {
-        private readonly string _bucket;
+        private readonly Bucket _bucket;
         private readonly string _key;
         private readonly TouchThumbnailPathProvider _provider;
 
         private const string RequestRegex = @"^(?<key>[a-f0-9-]+)_(?<version>[a-z0-9_-]+)\.(?<extension>[a-z0-9]{1,5})$";
         private const string RawRequestRegex = @"^(?<key>[a-f0-9-]+)(\.(?<extension>[a-z0-9]{1,5}))?$";
 
-        public TouchThumbnailFile(string virtualPath, string bucket, TouchThumbnailPathProvider provider)
+        public TouchThumbnailFile(string virtualPath, Bucket bucket, TouchThumbnailPathProvider provider)
             : base(virtualPath)
         {
             _provider = provider;
@@ -69,30 +70,12 @@ namespace ImageResizer.Plugins.TouchThumbnail
         {
             if (!Exists) throw new InvalidOperationException();
 
-            try
-            {
-                var req = new GetObjectRequest { BucketName = _bucket, Key = _key };
-
-                using (var s = _provider.S3Client.GetObject(req))
-                {
-                    return StreamExtensions.CopyToMemoryStream(s.ResponseStream);
-                }
-            }
-            catch (AmazonS3Exception se)
-            {
-                if (se.StatusCode == HttpStatusCode.NotFound || "NoSuchKey".Equals(se.ErrorCode, StringComparison.OrdinalIgnoreCase))
-                    throw new FileNotFoundException("Amazon S3 file not found", se);
-
-                if (se.StatusCode == HttpStatusCode.Forbidden || "AccessDenied".Equals(se.ErrorCode, StringComparison.OrdinalIgnoreCase))
-                    throw new FileNotFoundException("Amazon S3 access denied - file may not exist", se);
-
-                throw;
-            }
+            return StreamExtensions.CopyToMemoryStream(_bucket.GetFile(_key));
         }
 
         public string GetCacheKey(bool includeModifiedDate)
         {
-            return _bucket + Key + Version + Extension;
+            return Key + Version + Extension;
         }
 
         public DateTime ModifiedDateUTC

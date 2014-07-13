@@ -191,14 +191,14 @@ namespace Touch.ServiceModel.OAuth
 
                 var result = new RequestToken
                 {
-                    AccessDenied = string.Compare(requestToken.Status, "Denied", true) == 0,
-                    UsedUp = string.Compare(requestToken.Status, "UsedUp", true) == 0,
+                    AccessDenied = string.Compare(requestToken.Status, "Denied", StringComparison.OrdinalIgnoreCase) == 0,
+                    UsedUp = string.Compare(requestToken.Status, "UsedUp", StringComparison.OrdinalIgnoreCase) == 0,
                     ConsumerKey = requestToken.Consumer,
                     Token = requestToken.HashKey,
                     TokenSecret = requestToken.Secret,
                     Verifier = requestToken.Verification,
                     Realm = requestToken.Realm,
-                    CallbackUrl = "oob"
+                    CallbackUrl = requestToken.CallbackUrl
                 };
 
                 if (prefetchAccessToken && !string.IsNullOrWhiteSpace(requestToken.AccessToken))

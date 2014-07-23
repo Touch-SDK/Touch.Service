@@ -21,6 +21,12 @@ namespace Touch.ServiceModel.OAuth
 
             uri = uriBuilder.Uri;
 
+            if (requestProperty.Headers.AllKeys.Contains("X-Forwarded-Proto") && uri.Scheme == "http")
+            {
+                var url = requestProperty.Headers["X-Forwarded-Proto"] + uri.ToString().Substring(uri.Scheme.Length);
+                uri = new Uri(url);
+            }
+
             var context = new OAuthContext
             {
                 RawUri = uri,

@@ -52,7 +52,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Touch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Touch.1.0.0\lib\Touch.dll</HintPath>
+      <HintPath>..\packages\Touch.1.0.7\lib\Touch.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +60,7 @@
     <Compile Include="Configuration\ConfigurationResolver.cs" />
     <Compile Include="Configuration\EnvironmentValues.cs" />
     <Compile Include="Configuration\HttpCachePolicyElement.cs" />
+    <Compile Include="Data\MultipartParser.cs" />
     <Compile Include="Description\HttpCachePolicyBehavior.cs" />
     <Compile Include="Dispatcher\HttpCachePolicyMessageInspector.cs" />
     <Compile Include="Dispatcher\HttpDispatchMessageInspector.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Formatters\MessageExtensions.cs" />
     <Compile Include="Formatters\RequestBodyDispatchFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitOfWork\IUnitOfWork.cs" />
     <Compile Include="UnitOfWork\UnitOfWorkHttpModule.cs" />
     <Compile Include="UnitOfWork\UnitOfWorkMessageInspector.cs" />
     <Compile Include="UnitOfWork\UnitOfWorkServiceBehavior.cs" />

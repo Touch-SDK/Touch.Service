@@ -3,31 +3,32 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Web.Caching;
 using System.Web.Hosting;
-using Amazon.S3;
 using ImageResizer.Util;
 using Touch.Storage;
 
 namespace ImageResizer.Plugins.TouchThumbnail
 {
-    /// <summary>
-    /// Allows clients to request objects located on another amazon S3 server through this server. Allows URL rewriting.
-    /// </summary>
     sealed public class TouchThumbnailPathProvider : VirtualPathProvider, IVirtualImageProvider
     {
-        private string _virtualFilesystemPrefix;
+        #region .ctor
+        public TouchThumbnailPathProvider(TouchThumbnail parent)
+        {
+            SupportedFormats = parent.SupportedFormats;
+            RawFormats = parent.RawFormats;
+            VirtualFilesystemPrefix = parent.VPath;
 
-        public Bucket Bucket { get; set; }
+            _bucket = parent.Storage;
+        } 
+        #endregion
 
-        public string[] SupportedFormats { get; set; }
+        #region Data
+        private readonly IStorage _bucket;
 
-        public string[] RawFormats { get; set; }
+        internal string[] SupportedFormats { get; private set; }
+        internal string[] RawFormats { get; private set; } 
+        #endregion
 
-        public string StoragePath { get; set; }
-
-        /// <summary>
-        /// Requests starting with this path will be handled by this virtual path provider. Should be in app-relative form: "~/thumbnail/".
-        /// Will be converted to root-relative form upon assigment. Trailing slash required, auto-added.
-        /// </summary>
+        #region Public methods
         public string VirtualFilesystemPrefix
         {
             get { return _virtualFilesystemPrefix; }
@@ -37,24 +38,21 @@ namespace ImageResizer.Plugins.TouchThumbnail
                 _virtualFilesystemPrefix = PathUtils.ResolveAppRelativeAssumeAppRelative(value);
             }
         }
+        private string _virtualFilesystemPrefix;
 
         public bool FileExists(string virtualPath, NameValueCollection queryString)
         {
-            return IsPathVirtual(virtualPath) && new TouchThumbnailFile(virtualPath, Bucket, this).Exists;
+            return IsPathVirtual(virtualPath) && TouchThumbnailFile.IsValid(virtualPath.Substring(VirtualFilesystemPrefix.Length));
         }
 
         public IVirtualFile GetFile(string virtualPath, NameValueCollection queryString)
         {
-            return (IsPathVirtual(virtualPath)) ? new TouchThumbnailFile(virtualPath, Bucket, this) : null;
+            return (IsPathVirtual(virtualPath)) ? new TouchThumbnailFile(virtualPath, _bucket, this) : null;
         }
 
         public string FilterPath(string path)
         {
             return path;
-        }
-
-        protected override void Initialize()
-        {
         }
 
         public bool IsPathVirtual(string virtualPath)
@@ -65,7 +63,7 @@ namespace ImageResizer.Plugins.TouchThumbnail
         public override bool FileExists(string virtualPath)
         {
             return IsPathVirtual(virtualPath)
-                ? new TouchThumbnailFile(virtualPath, Bucket, this).Exists 
+                ? TouchThumbnailFile.IsValid(virtualPath.Substring(VirtualFilesystemPrefix.Length))
                 : Previous.FileExists(virtualPath);
         }
 
@@ -73,19 +71,26 @@ namespace ImageResizer.Plugins.TouchThumbnail
         public override VirtualFile GetFile(string virtualPath)
         {
             return IsPathVirtual(virtualPath)
-                ? new TouchThumbnailFile(virtualPath, Bucket, this) 
+                ? new TouchThumbnailFile(virtualPath, _bucket, this)
                 : Previous.GetFile(virtualPath);
         }
 
         public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
         {
-            return IsPathVirtual(virtualPath) 
-                ? new EmptyCacheDependency() 
+            return IsPathVirtual(virtualPath)
+                ? new EmptyCacheDependency()
                 : Previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+        } 
+        #endregion
+
+        #region Helpers
+        protected override void Initialize()
+        {
         }
 
         private class EmptyCacheDependency : CacheDependency
         {
-        }
+        } 
+        #endregion
     }
 }

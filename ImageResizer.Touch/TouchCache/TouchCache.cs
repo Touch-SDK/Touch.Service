@@ -1,6 +1,4 @@
-﻿using System.Collections.Specialized;
-using System.Configuration;
-using System.Diagnostics;
+﻿using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -13,24 +11,10 @@ namespace ImageResizer.Plugins.TouchCache
 {
     public sealed class TouchCache : IPlugin, ICache, IMultiInstancePlugin
     {
-        #region .ctor
-        public TouchCache(NameValueCollection args)
-        {
-            _args = args;
-        }
-
-        public TouchCache()
-        { }
-        #endregion
-
         #region Dependencies
         public static IDependenciesProvider DependenciesProvider { private get; set; }
 
         public IStorage Storage { private get; set; }
-        #endregion
-
-        #region Data
-        private readonly NameValueCollection _args;
         #endregion
 
         #region Public methods
@@ -40,8 +24,6 @@ namespace ImageResizer.Plugins.TouchCache
                 throw new ConfigurationErrorsException("Missing DependenciesProvider");
 
             var plugin = DependenciesProvider.Resolve<TouchCache>();
-
-            //Do the configuration with _args
 
             c.Plugins.add_plugin(plugin);
             return this;

@@ -47,14 +47,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="Touch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Touch.1.0.7\lib\Touch.dll</HintPath>
+      <HintPath>..\packages\Touch.1.0.8\lib\Touch.dll</HintPath>
     </Reference>
     <Reference Include="Touch.ServiceModel, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Touch.ServiceModel.1.0.2\lib\Touch.ServiceModel.dll</HintPath>
-    </Reference>
-    <Reference Include="Touch.Storage.Aws">
-      <HintPath>..\packages\Touch.Storage.Aws.1.0.4\lib\Touch.Storage.Aws.dll</HintPath>
+      <HintPath>..\packages\Touch.ServiceModel.1.0.3\lib\Touch.ServiceModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +59,7 @@
     <Compile Include="TouchCache\TouchCache.cs" />
     <Compile Include="TouchCache\TouchCacheHandler.cs" />
     <Compile Include="TouchThumbnail\TouchThumbnail.cs" />
+    <Compile Include="TouchThumbnail\TouchVideoThumbnailFile.cs" />
     <Compile Include="TouchThumbnail\TouchThumbnailFile.cs" />
     <Compile Include="TouchThumbnail\TouchThumbnailPathProvider.cs" />
   </ItemGroup>

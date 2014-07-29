@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.Caching;
 using System.Web.Hosting;
 using ImageResizer.Util;
@@ -17,12 +18,14 @@ namespace ImageResizer.Plugins.TouchThumbnail
             RawFormats = parent.RawFormats;
             VirtualFilesystemPrefix = parent.VPath;
 
-            _bucket = parent.Storage;
+            _sourceStorage = parent.SourceStorage;
+            _versionsStorage = parent.VersionsStorage;
         } 
         #endregion
 
         #region Data
-        private readonly IStorage _bucket;
+        private readonly IStorage _sourceStorage;
+        private readonly IStorage _versionsStorage;
 
         internal string[] SupportedFormats { get; private set; }
         internal string[] RawFormats { get; private set; } 
@@ -42,12 +45,15 @@ namespace ImageResizer.Plugins.TouchThumbnail
 
         public bool FileExists(string virtualPath, NameValueCollection queryString)
         {
-            return IsPathVirtual(virtualPath) && TouchThumbnailFile.IsValid(virtualPath.Substring(VirtualFilesystemPrefix.Length));
+            return IsPathVirtual(virtualPath) && TouchThumbnailFile.IsValidPath(virtualPath, VirtualFilesystemPrefix);
         }
 
         public IVirtualFile GetFile(string virtualPath, NameValueCollection queryString)
         {
-            return (IsPathVirtual(virtualPath)) ? new TouchThumbnailFile(virtualPath, _bucket, this) : null;
+            if (!IsPathVirtual(virtualPath))
+                return null;
+
+            return (IVirtualFile)GetFile(virtualPath);
         }
 
         public string FilterPath(string path)
@@ -63,16 +69,28 @@ namespace ImageResizer.Plugins.TouchThumbnail
         public override bool FileExists(string virtualPath)
         {
             return IsPathVirtual(virtualPath)
-                ? TouchThumbnailFile.IsValid(virtualPath.Substring(VirtualFilesystemPrefix.Length))
+                ? TouchThumbnailFile.IsValidPath(virtualPath, VirtualFilesystemPrefix)
                 : Previous.FileExists(virtualPath);
         }
 
 
         public override VirtualFile GetFile(string virtualPath)
         {
-            return IsPathVirtual(virtualPath)
-                ? new TouchThumbnailFile(virtualPath, _bucket, this)
-                : Previous.GetFile(virtualPath);
+            if (!IsPathVirtual(virtualPath))
+                return Previous.GetFile(virtualPath);
+
+            var file = new TouchThumbnailFile(virtualPath, _sourceStorage, this);
+
+            if (file.IsVideo)
+            {
+                if (!SupportedFormats.Contains(file.Extension))
+                    return Previous.GetFile(virtualPath);
+
+                virtualPath = VirtualFilesystemPrefix + file.GetVideoThumbnailKey();
+                return new TouchVideoThumbnailFile(virtualPath, _versionsStorage, this);
+            }
+
+            return file;
         }
 
         public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)

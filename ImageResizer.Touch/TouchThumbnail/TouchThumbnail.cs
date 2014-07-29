@@ -15,25 +15,14 @@ namespace ImageResizer.Plugins.TouchThumbnail
 {
     sealed public class TouchThumbnail : IPlugin, IMultiInstancePlugin
     {
-        #region .ctor
-        public TouchThumbnail(NameValueCollection args)
-        {
-            _args = args;
-        }
-
-        public TouchThumbnail()
-        { }
-        #endregion
-
         #region Dependencies
         public static IDependenciesProvider DependenciesProvider { private get; set; }
 
-        public IStorage Storage { internal get; set; }
+        public IStorage SourceStorage { internal get; set; }
+        public IStorage VersionsStorage { internal get; set; }
         #endregion
 
         #region Data
-        private readonly NameValueCollection _args;
-
         internal string VPath;
         internal string[] SupportedFormats = { "jpg" };
         internal string[] RawFormats = new string[0];
@@ -49,15 +38,9 @@ namespace ImageResizer.Plugins.TouchThumbnail
 
             var plugin = DependenciesProvider.Resolve<TouchThumbnail>();
 
-            if (!string.IsNullOrEmpty(_args["supportedFormats"]))
-                plugin.SupportedFormats = _args["supportedFormats"].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (!string.IsNullOrEmpty(_args["rawFormats"]))
-                plugin.RawFormats = _args["rawFormats"].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (string.IsNullOrEmpty(_args["prefix"]))
-                throw new ConfigurationErrorsException("prefix property is required");
-            plugin.VPath = _args["prefix"];
+            plugin.SupportedFormats = c.get("touchthumbnail.supportedFormats", string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            plugin.RawFormats = c.get("touchthumbnail.rawFormats", string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            plugin.VPath = c.get("touchthumbnail.prefix", "/");
 
             plugin.Initialize(c);
 
@@ -83,45 +66,41 @@ namespace ImageResizer.Plugins.TouchThumbnail
 
             c.Pipeline.PostRewrite += delegate(IHttpModule sender, HttpContext context, IUrlEventArgs e)
             {
-                var file = new TouchThumbnailFile(e.VirtualPath, Storage, _vpp);
+                e.QueryString = new NameValueCollection();
 
-                if (file.Exists)
+                var file = new TouchThumbnailFile(e.VirtualPath, SourceStorage, _vpp);
+
+                if (!file.IsValid)
+                    return;
+
+                if (RawFormats.Contains(file.Extension))
                 {
-                    if (RawFormats.Contains(file.Extension))
-                    {
-                        e.QueryString = new NameValueCollection
-                                            {
-                                                {"cache", ServerCacheMode.Always.ToString()},
-                                                {"process", ProcessWhen.No.ToString()}
-                                            };
-
-                        if (RawFormats.Contains(file.Extension))
-                            e.QueryString["format"] = file.Extension;
-                    }
-                    else
-                    {
-                        e.QueryString = new NameValueCollection
-                                            {
-                                                {"preset", file.Version},
-                                                {"format", file.Extension},
-                                                {"cache", ServerCacheMode.Always.ToString()},
-                                                {"process", ProcessWhen.Always.ToString()}
-                                            };
-                    }
-
-                    e.QueryString["output"] = file.GetCacheKey(false);
-                    e.QueryString["mime"] = MimeMapping.GetMimeMapping(file.GetCacheKey(false));
+                    e.QueryString = new NameValueCollection
+                                        {
+                                            {"format", file.Extension},
+                                            {"cache", ServerCacheMode.Always.ToString()},
+                                            {"process", ProcessWhen.No.ToString()},
+                                            {"output", file.GetCacheKey(false)},
+                                            {"mime", MimeMapping.GetMimeMapping(file.GetCacheKey(false))}
+                                        };
                 }
-                else
-                    e.QueryString = new NameValueCollection();
+                else if (SupportedFormats.Contains(file.Extension))
+                {
+                    e.QueryString = new NameValueCollection
+                                        {
+                                            {"preset", file.Version},
+                                            {"format", file.Extension},
+                                            {"cache", ServerCacheMode.Always.ToString()},
+                                            {"process", ProcessWhen.Always.ToString()},
+                                            {"output", file.GetCacheKey(false)},
+                                            {"mime", MimeMapping.GetMimeMapping(file.GetCacheKey(false))}
+                                        };
+                }
             };
 
             c.Pipeline.PreHandleImage += delegate(IHttpModule sender, HttpContext context, IResponseArgs args)
             {
-                if (args.SuggestedExtension == "unknown")
-                {
-                    args.ResponseHeaders.ContentType = args.RewrittenQuerystring["mime"];
-                }
+                args.ResponseHeaders.ContentType = args.RewrittenQuerystring["mime"];
             };
 
             try

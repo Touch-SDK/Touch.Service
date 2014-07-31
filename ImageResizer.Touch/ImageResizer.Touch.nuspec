@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>ImageResizer.Touch</id>
-        <version>1.0.4</version>
+        <version>1.0.6</version>
         <authors>Artem Abashev</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Touch SDK ImageResizer plug-in.</description>

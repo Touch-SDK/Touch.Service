@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Web;
+using Amazon.ElasticTranscoder.Model;
 using ImageResizer.Caching;
 using ImageResizer.Configuration;
 using Touch.Providers;
@@ -15,6 +16,11 @@ namespace ImageResizer.Plugins.TouchCache
         public static IDependenciesProvider DependenciesProvider { private get; set; }
 
         public IStorage Storage { private get; set; }
+        #endregion
+
+        #region Data
+
+        private static readonly int ExpiresIn = (int)System.TimeSpan.FromDays(365).TotalSeconds;
         #endregion
 
         #region Public methods
@@ -61,6 +67,8 @@ namespace ImageResizer.Plugins.TouchCache
 
                 current.Response.RedirectLocation = url;
                 current.Response.StatusCode = 301;
+                current.Response.Expires = ExpiresIn;
+                current.Response.End();
             }
             else
             {

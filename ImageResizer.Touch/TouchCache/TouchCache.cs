@@ -58,7 +58,9 @@ namespace ImageResizer.Plugins.TouchCache
             if (Storage.IsPublic)
             {
                 var url = Storage.GetPublicUrl(key);
-                current.Response.Redirect(url, true);
+
+                current.Response.RedirectLocation = url;
+                current.Response.StatusCode = 301;
             }
             else
             {

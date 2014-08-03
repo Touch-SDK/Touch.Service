@@ -43,7 +43,7 @@ namespace ImageResizer.Plugins.TouchCache
 
         public bool CanProcess(HttpContext current, IResponseArgs e)
         {
-            return e.RewrittenQuerystring.AllKeys.Contains("output") && e.RewrittenQuerystring["process"] != ProcessWhen.No.ToString();
+            return e.RewrittenQuerystring.AllKeys.Contains("output");
         }
 
         public void Process(HttpContext current, IResponseArgs e)

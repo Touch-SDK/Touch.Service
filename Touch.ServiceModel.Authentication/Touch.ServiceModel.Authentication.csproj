@@ -63,6 +63,9 @@
   <ItemGroup>
     <Compile Include="Authorization\OAuthAuthorizationManager.cs" />
     <Compile Include="Authorization\OAuthTokenPrincipal.cs" />
+    <Compile Include="Authorization\PrincipalAuthorizationPolicy.cs" />
+    <Compile Include="Authorization\RoleProviderAuthorizationPolicy.cs" />
+    <Compile Include="Authorization\RoleProviderPrincipal.cs" />
     <Compile Include="OAuth\OAuthConsumerStore.cs" />
     <Compile Include="OAuth\OAuthContextExtension.cs" />
     <Compile Include="OAuth\OAuthNonceGenerator.cs" />
@@ -73,7 +76,6 @@
     <Compile Include="Providers\TouchMembershipProvider.cs" />
     <Compile Include="Providers\WcfAuthenticationProvider.cs" />
     <Compile Include="Providers\WebAuthenticationProvider.cs" />
-    <Compile Include="Web\ApiProxyHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

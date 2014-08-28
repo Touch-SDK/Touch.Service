@@ -64,12 +64,8 @@
     <Compile Include="Description\HttpCachePolicyBehavior.cs" />
     <Compile Include="Dispatcher\HttpCachePolicyMessageInspector.cs" />
     <Compile Include="Dispatcher\HttpDispatchMessageInspector.cs" />
-    <Compile Include="Authorization\PrincipalAuthorizationPolicy.cs" />
-    <Compile Include="Authorization\RoleProviderAuthorizationPolicy.cs" />
-    <Compile Include="Authorization\RoleProviderPrincipal.cs" />
     <Compile Include="Configuration\FormEncodingExtensionElement.cs" />
     <Compile Include="Configuration\RestfulExtensionElement.cs" />
-    <Compile Include="Configuration\StorageSection.cs" />
     <Compile Include="Description\FormEncodingBehavior.cs" />
     <Compile Include="Description\RestfulBehavior.cs" />
     <Compile Include="Dispatcher\HttpOverrideOperationSelector.cs" />

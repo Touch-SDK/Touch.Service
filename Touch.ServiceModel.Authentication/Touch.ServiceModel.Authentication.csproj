@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Touch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Touch.1.0.5\lib\Touch.dll</HintPath>
+      <HintPath>..\packages\Touch.1.0.7\lib\Touch.dll</HintPath>
     </Reference>
     <Reference Include="Touch.Business.Authentication, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -57,7 +57,7 @@
     </Reference>
     <Reference Include="Touch.ServiceModel, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Touch.ServiceModel.1.0.1\lib\Touch.ServiceModel.dll</HintPath>
+      <HintPath>..\packages\Touch.ServiceModel.1.0.4\lib\Touch.ServiceModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

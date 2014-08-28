@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Touch.ServiceModel</id>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
         <authors>Artem Abashev</authors>
         <projectUrl>https://github.com/Touch-SDK/Touch.Service</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.ServiceModel.Authenti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageResizer.Touch", "ImageResizer.Touch\ImageResizer.Touch.csproj", "{146C9D0F-A47E-4923-9F27-D00F3FB520C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.ServiceModel.Caching", "Touch.ServiceModel.Caching\Touch.ServiceModel.Caching.csproj", "{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{146C9D0F-A47E-4923-9F27-D00F3FB520C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{146C9D0F-A47E-4923-9F27-D00F3FB520C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{146C9D0F-A47E-4923-9F27-D00F3FB520C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

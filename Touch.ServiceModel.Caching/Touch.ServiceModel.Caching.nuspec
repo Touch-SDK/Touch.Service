@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>Touch.ServiceModel</id>
-        <version>1.0.5</version>
+        <id>Touch.ServiceModel.Caching</id>
+        <version>1.0.0</version>
         <authors>Artem Abashev</authors>
         <projectUrl>https://github.com/Touch-SDK/Touch.Service</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Touch SDK service types.</description>
+        <description>Touch SDK service caching support.</description>
         <dependencies>
+            <dependency id="Touch.ServiceModel" version="1.0.5" />
             <dependency id="Touch" version="1.0.7" />
         </dependencies>
     </metadata>
     <files>
-        <file src="bin\Release\Touch.ServiceModel.dll" target="lib\Touch.ServiceModel.dll" />
-        <file src="bin\Release\Touch.ServiceModel.pdb" target="lib\Touch.ServiceModel.pdb" />
-        <file src="bin\Release\Touch.ServiceModel.XML" target="lib\Touch.ServiceModel.XML" />
+        <file src="bin\Release\Touch.ServiceModel.Caching.dll" target="lib\Touch.ServiceModel.Caching.dll" />
+        <file src="bin\Release\Touch.ServiceModel.Caching.pdb" target="lib\Touch.ServiceModel.Caching.pdb" />
     </files>
 </package>

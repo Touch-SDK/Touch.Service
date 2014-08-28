@@ -1,18 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9A5BBDD8-28A5-40CF-8AFD-8A8A81D0E130}</ProjectGuid>
+    <ProjectGuid>{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Touch.ServiceModel</RootNamespace>
-    <AssemblyName>Touch.ServiceModel</AssemblyName>
+    <RootNamespace>Touch.ServiceModel.Caching</RootNamespace>
+    <AssemblyName>Touch.ServiceModel.Caching</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,50 +28,31 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Release\Touch.ServiceModel.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IdentityModel" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.ServiceModel.Activation" />
-    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Touch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Touch">
       <HintPath>..\packages\Touch.1.0.7\lib\Touch.dll</HintPath>
+    </Reference>
+    <Reference Include="Touch.ServiceModel, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Touch.ServiceModel.1.0.5\lib\Touch.ServiceModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\ApiConnectionStringBuilder.cs" />
-    <Compile Include="Configuration\ConfigurationResolver.cs" />
-    <Compile Include="Configuration\EnvironmentValues.cs" />
-    <Compile Include="Data\MultipartParser.cs" />
-    <Compile Include="Dispatcher\HttpDispatchMessageInspector.cs" />
-    <Compile Include="Configuration\FormEncodingExtensionElement.cs" />
-    <Compile Include="Configuration\RestfulExtensionElement.cs" />
-    <Compile Include="Description\FormEncodingBehavior.cs" />
-    <Compile Include="Description\RestfulBehavior.cs" />
-    <Compile Include="Dispatcher\HttpOverrideOperationSelector.cs" />
-    <Compile Include="Formatters\HtmlFormRequestDispatchFormatter.cs" />
-    <Compile Include="Formatters\HtmlFormResponseDispatchFormatter.cs" />
-    <Compile Include="Formatters\MessageExtensions.cs" />
-    <Compile Include="Formatters\RequestBodyDispatchFormatter.cs" />
+    <Compile Include="Configuration\HttpCachePolicyElement.cs" />
+    <Compile Include="Description\HttpCachePolicyBehavior.cs" />
+    <Compile Include="Dispatcher\HttpCachePolicyMessageInspector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitOfWork\IUnitOfWork.cs" />
-    <Compile Include="UnitOfWork\UnitOfWorkHttpModule.cs" />
-    <Compile Include="UnitOfWork\UnitOfWorkMessageInspector.cs" />
-    <Compile Include="UnitOfWork\UnitOfWorkServiceBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

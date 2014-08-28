@@ -57,7 +57,7 @@
     </Reference>
     <Reference Include="Touch.ServiceModel, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Touch.ServiceModel.1.0.4\lib\Touch.ServiceModel.dll</HintPath>
+      <HintPath>..\packages\Touch.ServiceModel.1.0.5\lib\Touch.ServiceModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

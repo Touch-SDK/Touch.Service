@@ -23,17 +23,13 @@ namespace Touch.ServiceModel.Dispatcher
                 return null;
 
             var cacheControl = GetCacheabilityString(_behavior.Cacheability);
-            var maxAge = (int)_behavior.Duration.TotalSeconds;
 
-            if (maxAge > 0)
+            if (!String.IsNullOrEmpty(cacheControl))
             {
-                if (!String.IsNullOrEmpty(cacheControl))
-                {
-                    cacheControl += ",";
-                }
-
-                cacheControl += "max-age=" + _behavior.Duration.TotalSeconds.ToString(CultureInfo.InvariantCulture);
+                cacheControl += ",";
             }
+
+            cacheControl += "max-age=" + _behavior.Duration.TotalSeconds.ToString(CultureInfo.InvariantCulture);
 
             return cacheControl;
         }

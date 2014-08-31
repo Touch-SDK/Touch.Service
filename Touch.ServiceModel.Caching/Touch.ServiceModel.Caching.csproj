@@ -7,7 +7,7 @@
     <ProjectGuid>{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Touch.ServiceModel.Caching</RootNamespace>
+    <RootNamespace>Touch.ServiceModel</RootNamespace>
     <AssemblyName>Touch.ServiceModel.Caching</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -34,6 +34,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -49,10 +50,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ConditionalGetElement.cs" />
     <Compile Include="Configuration\HttpCachePolicyElement.cs" />
+    <Compile Include="Description\ConditionalGetBehavior.cs" />
     <Compile Include="Description\HttpCachePolicyBehavior.cs" />
+    <Compile Include="Dispatcher\ConditionalGetMessageInspector.cs" />
     <Compile Include="Dispatcher\HttpCachePolicyMessageInspector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\ResponseMetadataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

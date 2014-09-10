@@ -14,7 +14,10 @@ namespace ImageResizer.Plugins.TouchThumbnail
             : base(virtualPath)
         {
             if (!provider.IsPathVirtual(virtualPath))
-                throw new ArgumentException("File path must be located within " + provider.VirtualFilesystemPrefix);
+            {
+                IsValid = false;
+                return;
+            }
 
             _bucket = bucket;
 

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using ImageResizer.Caching;
 using ImageResizer.Configuration;
@@ -20,6 +22,7 @@ namespace ImageResizer.Plugins.TouchCache
 
         #region Data
         private static readonly TimeSpan ExpiresIn = TimeSpan.FromDays(365);
+        private readonly ConcurrentDictionary<string, Tuple<string, DateTime>> _cache = new ConcurrentDictionary<string, Tuple<string, DateTime>>();
         #endregion
 
         #region Public methods
@@ -48,36 +51,45 @@ namespace ImageResizer.Plugins.TouchCache
         public void Process(HttpContext current, IResponseArgs e)
         {
             var key = e.RewrittenQuerystring["output"];
+            Tuple<string, DateTime> cached;
 
-            if (!Storage.HasFile(key))
+            if (_cache.TryGetValue(key, out cached))
             {
-                var metadata = new Metadata { ContentType = e.RewrittenQuerystring["mime"] };
-
-                using (var data = new MemoryStream())
+                e.ResponseHeaders.Headers["ETag"] = cached.Item1;
+                e.ResponseHeaders.LastModified = cached.Item2;
+            }
+            else
+            {
+                if (!Storage.HasFile(key))
                 {
-                    e.ResizeImageToStream(data);
-                    Storage.PutFile(data, key, metadata);
+                    var meta = new Metadata { ContentType = e.RewrittenQuerystring["mime"] };
+
+                    using (var data = new MemoryStream())
+                    {
+                        e.ResizeImageToStream(data);
+                        Storage.PutFile(data, key, meta);
+                    }
                 }
+
+                var metadata = Storage.GetMetadata(key);
+
+                e.ResponseHeaders.Headers["ETag"] = metadata.ETag;
+                e.ResponseHeaders.LastModified = metadata.LastModified;
+
+                _cache.TryAdd(key, new Tuple<string, DateTime>(metadata.ETag, metadata.LastModified));
             }
 
             if (Storage.IsPublic)
             {
                 var url = Storage.GetPublicUrl(key);
 
-                current.Response.RedirectLocation = url;
-                current.Response.StatusCode = 301;
-                current.Response.End();
+                Serve(current, e, () => new WebClient().OpenRead(url));
             }
             else
             {
-                var metadata = Storage.GetMetadata(key);
-
-                e.ResponseHeaders.LastModified = metadata.LastModified;
-                e.ResponseHeaders.Headers["ETag"] = metadata.ETag;
-
                 Serve(current, e, () => Storage.GetFile(key));
             }
-        } 
+        }
         #endregion
 
         #region Helper methods

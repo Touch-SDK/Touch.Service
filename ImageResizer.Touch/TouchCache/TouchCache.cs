@@ -70,21 +70,20 @@ namespace ImageResizer.Plugins.TouchCache
             }
             else
             {
-                Metadata metadata;
-                var stream = Storage.GetFile(key, out metadata);
+                var metadata = Storage.GetMetadata(key);
 
                 e.ResponseHeaders.LastModified = metadata.LastModified;
                 e.ResponseHeaders.Headers["ETag"] = metadata.ETag;
 
-                Serve(current, e, stream);
+                Serve(current, e, () => Storage.GetFile(key));
             }
         } 
         #endregion
 
         #region Helper methods
-        private static void Serve(HttpContext context, IResponseArgs e, Stream data)
+        private static void Serve(HttpContext context, IResponseArgs e, Func<Stream> factory)
         {
-            context.RemapHandler(new TouchCacheHandler(e, data));
+            context.RemapHandler(new TouchCacheHandler(e, factory));
         } 
         #endregion
     }

@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Web;
 using ImageResizer.Caching;
 
@@ -23,11 +26,32 @@ namespace ImageResizer.Plugins.TouchCache
 
         public void ProcessRequest(HttpContext context)
         {
-            context.Response.StatusCode = 200;
-            context.Response.BufferOutput = false;
+            var etag = _e.ResponseHeaders.Headers.AllKeys.Contains("ETag")
+                ? _e.ResponseHeaders.Headers["ETag"]
+                : null;
+            var lastModified = _e.ResponseHeaders.LastModified;
 
             _e.ResponseHeaders.ApplyDuringPreSendRequestHeaders = false;
             _e.ResponseHeaders.ApplyToResponse(_e.ResponseHeaders, context);
+
+            context.Response.BufferOutput = false;
+
+            var headers = context.Request.Headers;
+
+            DateTime ifModifiedSince;
+            if (headers.AllKeys.Contains("If-Modified-Since") && DateTime.TryParse(headers["If-Modified-Since"], out ifModifiedSince) && lastModified <= ifModifiedSince)
+            {
+                context.Response.StatusCode = 304;
+                return;
+            }
+
+            if (headers.AllKeys.Contains("If-None-Match") && headers["If-None-Match"] == etag)
+            {
+                context.Response.StatusCode = 304;
+                return;
+            }
+
+            context.Response.StatusCode = 200;
 
             var buffer = new byte[BufferSize];
 

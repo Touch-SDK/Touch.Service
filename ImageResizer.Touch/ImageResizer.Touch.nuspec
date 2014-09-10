@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>ImageResizer.Touch</id>
-        <version>1.0.7</version>
+        <version>1.0.8</version>
         <authors>Artem Abashev</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Touch SDK ImageResizer plug-in.</description>
         <dependencies>
             <dependency id="ImageResizer" version="3.4.3" />
             <dependency id="Touch.ServiceModel" version="1.0.2" />
-            <dependency id="Touch" version="1.0.8" />
+            <dependency id="Touch" version="1.0.15" />
         </dependencies>
     </metadata>
     <files>

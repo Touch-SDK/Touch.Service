@@ -336,7 +336,7 @@ namespace Touch.Providers
                 return null;
             }
 
-            if ((RequiresUniqueEmail && !string.IsNullOrEmpty(email) && (GetUserNameByEmail(email) != string.Empty)))
+            if (RequiresUniqueEmail && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(GetUserNameByEmail(email)))
             {
                 status = MembershipCreateStatus.DuplicateEmail;
                 return null;

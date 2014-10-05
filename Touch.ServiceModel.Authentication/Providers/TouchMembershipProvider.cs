@@ -593,7 +593,11 @@ namespace Touch.Providers
                 if (u.IsLockedOut)
                     throw new MembershipPasswordException("The supplied user is locked out.");
 
-                u.Password = newPassword;
+                var salt = GenerateSalt();
+
+                u.Password = EncodePassword(newPassword, salt);
+                u.Salt = salt;
+
                 UpdateUser(u);
 
                 return newPassword;

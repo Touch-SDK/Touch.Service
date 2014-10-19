@@ -8,11 +8,16 @@ namespace Touch.ServiceModel.Description
 {
     sealed public class FormEncodingBehavior : WebHttpBehavior
     {
+        public string ResponseContentType { get; set; }
+
         protected override IDispatchMessageFormatter GetReplyDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint)
         {
             var converter = GetQueryStringConverter(operationDescription);
 
-            return new HtmlFormResponseDispatchFormatter(operationDescription, converter);
+            return new HtmlFormResponseDispatchFormatter(operationDescription, converter)
+            {
+                ResponseContentType = ResponseContentType
+            };
         }
 
         protected override IDispatchMessageFormatter GetRequestDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint)

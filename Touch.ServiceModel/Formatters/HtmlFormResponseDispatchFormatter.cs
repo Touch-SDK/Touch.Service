@@ -13,6 +13,8 @@ namespace Touch.ServiceModel.Formatters
 {
     sealed class HtmlFormResponseDispatchFormatter : IDispatchMessageFormatter
     {
+        public string ResponseContentType { get; set; }
+
         private readonly QueryStringConverter _converter;
 
         private Type BodyParameterType { get; set; }
@@ -59,8 +61,8 @@ namespace Touch.ServiceModel.Formatters
 
             string body;
 
-            if (BodyParameterType == typeof(void))
-                return WebOperationContext.Current.CreateTextResponse(string.Empty, "application/x-www-form-urlencoded");
+            if (BodyParameterType == typeof (void))
+                return WebOperationContext.Current.CreateTextResponse(string.Empty, ResponseContentType);
 
             if (_converter.CanConvert(BodyParameterType))
             {
@@ -71,7 +73,6 @@ namespace Touch.ServiceModel.Formatters
                 var data = (HttpResponseMessage)result;
 
                 body = data.Content.ReadAsStringAsync().Result;
-                body = body.ToString();
             }
             else
             {
@@ -109,7 +110,7 @@ namespace Touch.ServiceModel.Formatters
 
             return WebOperationContext.Current.CreateTextResponse(
                 body ?? string.Empty, 
-                "application/x-www-form-urlencoded",
+                ResponseContentType,
                 Encoding.ASCII
             );
         }

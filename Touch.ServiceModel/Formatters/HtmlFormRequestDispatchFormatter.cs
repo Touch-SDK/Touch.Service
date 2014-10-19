@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.ServiceModel.Channels;
@@ -30,8 +31,8 @@ namespace Touch.ServiceModel.Formatters
             //      (A) The type is decorated with the DataContractAttribute
             //      (B) Every public field or property that is decorated with the DataMemberAttribute is of a type that
             //          can be converted by the QueryStringConverter
-
-            _canConvertBodyType = QueryStringConverter.CanConvert(BodyParameterType);
+            
+            _canConvertBodyType = QueryStringConverter.CanConvert(BodyParameterType) || BodyParameterType == typeof(HttpRequestMessage);
 
             if (!_canConvertBodyType)
             {
@@ -49,7 +50,7 @@ namespace Touch.ServiceModel.Formatters
                 //  that is decorated with the DataMemberAttribute; we'll store this info in the bodyMembers dictionary
                 //  where the member name is the dictionary key
                 _bodyMembers = new Dictionary<string, BodyMemberData>();
-
+               
                 GetBobyMemberDataForFields(operation.Name);
                 GetBodyMemberDataForProperties(operation.Name);
 
@@ -60,6 +61,17 @@ namespace Touch.ServiceModel.Formatters
         protected override object DeserializeRequestBody(Stream body)
         {
             NameValueCollection parsedForm = ParseBodyAsNameValueCollection(body);
+
+            if (BodyParameterType == typeof (HttpRequestMessage))
+            {
+                var message = new HttpRequestMessage();
+                var messageData = parsedForm.Cast<object>()
+                    .Select((t, i) => new KeyValuePair<string, string>(parsedForm.GetKey(i), parsedForm.Get(i)));
+
+                message.Content = new FormUrlEncodedContent(messageData);
+
+                return message;
+            }
 
             // If we can covert the message body type via the QueryStringConverter then the 
             //  NameValueCollection should have a named value for the message body type
@@ -117,7 +129,8 @@ namespace Touch.ServiceModel.Formatters
         {
             // We only want to deserialize requests with the given content type; for all other requests
             //  we'll let the default WCF formatter do the deserialization
-            return WebOperationContext.Current != null && WebOperationContext.Current.IncomingRequest.ContentType == "application/x-www-form-urlencoded";
+            var result = WebOperationContext.Current != null && WebOperationContext.Current.IncomingRequest.ContentType.StartsWith("application/x-www-form-urlencoded");
+            return result;
         }
 
         private static NameValueCollection ParseBodyAsNameValueCollection(Stream body)

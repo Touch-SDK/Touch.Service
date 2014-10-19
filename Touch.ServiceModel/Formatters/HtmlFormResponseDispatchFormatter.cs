@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
@@ -31,7 +32,7 @@ namespace Touch.ServiceModel.Formatters
                 throw new SerializationException("Unable to serialize response.", e);
             }
 
-            var canConvertBodyType = _converter.CanConvert(BodyParameterType);
+            var canConvertBodyType = _converter.CanConvert(BodyParameterType) || BodyParameterType == typeof(HttpResponseMessage);
 
             if (!canConvertBodyType && BodyParameterType.GetCustomAttributes(typeof(DataContractAttribute), false).Length == 0)
             {
@@ -64,6 +65,13 @@ namespace Touch.ServiceModel.Formatters
             if (_converter.CanConvert(BodyParameterType))
             {
                 body = _converter.ConvertValueToString(result, BodyParameterType);
+            }
+            else if(BodyParameterType == typeof(HttpResponseMessage))
+            {
+                var data = (HttpResponseMessage)result;
+
+                body = data.Content.ReadAsStringAsync().Result;
+                body = body.ToString();
             }
             else
             {

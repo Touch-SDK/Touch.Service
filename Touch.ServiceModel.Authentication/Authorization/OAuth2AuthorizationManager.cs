@@ -62,8 +62,12 @@ namespace Touch.ServiceModel.Authorization
 
                             if (!accessToken.ExtraData.ContainsKey("oauth_user_token"))
                                 throw new OperationCanceledException("User token not found.");
+
+                            if (!accessToken.ExtraData.ContainsKey("oauth_security_token"))
+                                throw new OperationCanceledException("Security token not found.");
                             
                             user.HashKey = accessToken.ExtraData["oauth_user_token"];
+                            user.SecurityToken = accessToken.ExtraData["oauth_security_token"];
                         }
                     }
                 }

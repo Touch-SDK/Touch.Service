@@ -4,7 +4,6 @@ using DotNetOpenAuth.Messaging.Bindings;
 using DotNetOpenAuth.OAuth2;
 using DotNetOpenAuth.OAuth2.ChannelElements;
 using DotNetOpenAuth.OAuth2.Messages;
-using Touch.Domain;
 using Touch.Logic;
 using Touch.Providers;
 using Touch.ServiceModel.OAuth;
@@ -58,6 +57,7 @@ namespace Touch.ServiceModel.Authorization
             if (user == null) throw new OperationCanceledException("User not found.");
 
             accessToken.ExtraData["oauth_user_token"] = user.HashKey;
+            accessToken.ExtraData["oauth_security_token"] = user.SecurityToken;
 
             var result = new AccessTokenResult(accessToken) { AllowRefreshToken = UseRefreshTokens };
             return result;

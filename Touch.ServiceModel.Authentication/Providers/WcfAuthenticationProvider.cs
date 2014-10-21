@@ -1,7 +1,5 @@
-﻿using System;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using Touch.Domain;
-using Touch.Persistence;
 
 namespace Touch.Providers
 {
@@ -25,14 +23,18 @@ namespace Touch.Providers
             }
         }
 
-        public void Authenticate(string username, Credentials credentials)
+        public OAuth2User ActiveUser
         {
-            throw new NotSupportedException();
-        }
+            get
+            {
+                var context = OperationContext.Current;
+                if (context == null) return null;
 
-        public void Logout()
-        {
-            throw new NotSupportedException();
+                if (!context.IncomingMessageProperties.ContainsKey("OAuth2User"))
+                    return null;
+
+                return (OAuth2User)context.IncomingMessageProperties["OAuth2User"];
+            }
         }
         #endregion
     }

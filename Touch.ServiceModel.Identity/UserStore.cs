@@ -18,6 +18,11 @@ namespace Touch.ServiceModel.Identity
         IUserSecurityStampStore<TUser, Guid>
         where TUser : class, IIdentityUser
     {
+        public UserStore()
+        {
+            return;
+        }
+
         #region Dependencies
         public IdentityUserLogic<TUser> IdentityUserLogic { protected get; set; }
         public IdentityClaimLogic<TUser> IdentityClaimLogic { protected get; set; }
@@ -224,16 +229,12 @@ namespace Touch.ServiceModel.Identity
         #region IUserPasswordStore members
         public Task<string> GetPasswordHashAsync(TUser user)
         {
-            var passwordHash = IdentityUserLogic.GetPasswordHash(user.Id);
-
-            return Task.FromResult(passwordHash);
+            return Task.FromResult(user.PasswordHash);
         }
 
         public Task<bool> HasPasswordAsync(TUser user)
         {
-            var hasPassword = !string.IsNullOrEmpty(IdentityUserLogic.GetPasswordHash(user.Id));
-
-            return Task.FromResult(Boolean.Parse(hasPassword.ToString()));
+            return Task.FromResult(!string.IsNullOrEmpty(user.PasswordHash));
         }
 
         public Task SetPasswordHashAsync(TUser user, string passwordHash)

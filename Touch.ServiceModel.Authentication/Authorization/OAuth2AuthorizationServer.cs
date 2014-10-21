@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using DotNetOpenAuth.Messaging.Bindings;
 using DotNetOpenAuth.OAuth2;
 using DotNetOpenAuth.OAuth2.ChannelElements;
 using DotNetOpenAuth.OAuth2.Messages;
+using Touch.Domain;
 using Touch.Logic;
+using Touch.Providers;
 using Touch.ServiceModel.OAuth;
 
 namespace Touch.ServiceModel.Authorization
@@ -14,46 +17,28 @@ namespace Touch.ServiceModel.Authorization
         public OAuth2AuthorizationServer()
         {
             AccessTokenLifeSpan = TimeSpan.FromDays(1);
+            UseRefreshTokens = true;
         }
         #endregion
 
         #region Dependencies
         public IOAuth2CryptoService CryptoService { private get; set; }
-        public OAuth2KeyStore KeyStore { private get; set; }
+        public ICryptoKeyStore CryptoKeyStore { get; set; }
+        public INonceStore NonceStore { get; set; }
         public OAuth2Logic Logic { private get; set; }
+        public IOAuth2Provider Provider { private get; set; }
         #endregion
 
         #region Configuration
         public TimeSpan AccessTokenLifeSpan { get; set; }
+        public bool UseRefreshTokens { get; set; }
         #endregion
 
         #region Implementation of IAuthorizationServerHost
-        public ICryptoKeyStore CryptoKeyStore
-        {
-            get { return KeyStore; }
-        }
-
-        public INonceStore NonceStore
-        {
-            get { return KeyStore; }
-        }
-
         public AutomatedAuthorizationCheckResponse CheckAuthorizeClientCredentialsGrant(IAccessTokenRequest accessRequest)
         {
             throw new NotSupportedException();
         }
-
-        //public bool TryAuthorizeClientCredentialsGrant(IAccessTokenRequest accessRequest)
-        //{
-        //    throw new NotSupportedException();
-        //}
-
-        /*public bool TryAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName)
-        {
-            canonicalUserName = userName;
-
-            throw new NotSupportedException();
-        }*/
 
         public AccessTokenResult CreateAccessToken(IAccessTokenRequest accessTokenRequestMessage)
         {
@@ -61,10 +46,20 @@ namespace Touch.ServiceModel.Authorization
             {
                 Lifetime = AccessTokenLifeSpan,
                 ResourceServerEncryptionKey = CryptoService.GetEncryptionProvider(),
-                AccessTokenSigningKey = CryptoService.GetSigningProvider()
+                AccessTokenSigningKey = CryptoService.GetSigningProvider(),
+                ClientIdentifier = accessTokenRequestMessage.ClientIdentifier,
+                User = accessTokenRequestMessage.UserName
             };
 
-            var result = new AccessTokenResult(accessToken);
+            foreach (var scope in accessTokenRequestMessage.Scope)
+                accessToken.Scope.Add(scope);
+
+            var user = Provider.GetUser(accessTokenRequestMessage.UserName, accessTokenRequestMessage.ClientIdentifier);
+            if (user == null) throw new OperationCanceledException("User not found.");
+
+            accessToken.ExtraData["oauth_user_token"] = user.HashKey;
+
+            var result = new AccessTokenResult(accessToken) { AllowRefreshToken = UseRefreshTokens };
             return result;
         }
 
@@ -86,8 +81,28 @@ namespace Touch.ServiceModel.Authorization
 
         public AutomatedUserAuthorizationCheckResponse CheckAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest)
         {
-            var approved = true;
-            return new AutomatedUserAuthorizationCheckResponse(accessRequest, approved, userName);
+            AutomatedUserAuthorizationCheckResponse response;
+
+            if (Provider.ValidateUserCredentials(userName, password, accessRequest.ClientIdentifier))
+            {
+                var user = Provider.GetUser(userName, accessRequest.ClientIdentifier);
+
+                response = new AutomatedUserAuthorizationCheckResponse(accessRequest, true, userName);
+
+                var scope = new HashSet<string>(user.Roles);
+
+                if (accessRequest.Scope.Count > 0)
+                    scope.IntersectWith(accessRequest.Scope);
+
+                foreach (var s in scope)
+                    response.ApprovedScope.Add(s);
+            }
+            else
+            {
+                response = new AutomatedUserAuthorizationCheckResponse(accessRequest, false, null);
+            }
+
+            return response;
         }
         #endregion
 

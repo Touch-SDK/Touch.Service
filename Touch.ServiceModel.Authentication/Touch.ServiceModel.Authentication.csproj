@@ -108,7 +108,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\TouchMembershipProvider.cs" />
     <Compile Include="Providers\WcfAuthenticationProvider.cs" />
-    <Compile Include="Providers\WebAuthenticationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

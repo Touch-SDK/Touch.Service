@@ -14,6 +14,9 @@ namespace Touch.ServiceModel.Description
         {
             //Override HTTP method based on X-HTTP-Method-Override header
             endpointDispatcher.DispatchRuntime.OperationSelector = new HttpOverrideOperationSelector(endpointDispatcher.DispatchRuntime.OperationSelector);
+
+            //Add support for Access-Control-Allow-Origin header
+            endpointDispatcher.DispatchRuntime.MessageInspectors.Add(new CorsEnabledMessageInspector());
         }
     }
 }

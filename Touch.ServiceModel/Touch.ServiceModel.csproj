@@ -61,6 +61,7 @@
     <Compile Include="Configuration\ConfigurationResolver.cs" />
     <Compile Include="Configuration\EnvironmentValues.cs" />
     <Compile Include="Data\MultipartParser.cs" />
+    <Compile Include="Dispatcher\CorsEnabledMessageInspector.cs" />
     <Compile Include="Dispatcher\HttpDispatchMessageInspector.cs" />
     <Compile Include="Configuration\FormEncodingExtensionElement.cs" />
     <Compile Include="Configuration\RestfulExtensionElement.cs" />

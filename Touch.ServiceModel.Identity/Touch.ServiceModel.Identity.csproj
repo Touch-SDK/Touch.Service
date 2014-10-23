@@ -54,12 +54,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Touch.Business\Touch.Business.Identity\Touch.Business.Identity.csproj">
-      <Project>{959279bb-9f5a-406c-80a6-2efc4ee5db14}</Project>
-      <Name>Touch.Business.Identity</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

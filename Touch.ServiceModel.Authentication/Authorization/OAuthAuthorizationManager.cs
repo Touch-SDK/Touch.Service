@@ -55,13 +55,13 @@ namespace Touch.ServiceModel.Authorization
                 var accessToken = tokenRepository.GetAccessToken(oAuthContext.Token, oAuthContext.ConsumerKey);
                 var principal = CreatePrincipalFromToken(accessToken);
 
-                var consumerDescriptor = new Credentials
+                var consumerDescriptor = new OAuthCredentials
                 {
-                    Consumer = new KeyPair { Key = accessToken.ConsumerKey },
-                    Token = new KeyPair(accessToken.Token, accessToken.TokenSecret)
+                    Consumer = new OAuthKeyPair { Key = accessToken.ConsumerKey },
+                    Token = new OAuthKeyPair(accessToken.Token, accessToken.TokenSecret)
                 };
 
-                OperationContext.Current.IncomingMessageProperties["Credentials"] = consumerDescriptor;
+                OperationContext.Current.IncomingMessageProperties["OAuthUser"] = consumerDescriptor;
 
                 InitializeSecurityContext(requestMessage, principal);
             }

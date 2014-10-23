@@ -10,7 +10,7 @@ namespace Touch.ServiceModel.OAuth
     sealed public class OAuthConsumerStore : IConsumerStore
     {
         #region Dependencies
-        public AuthenticationLogic AuthenticationLogic { private get; set; }
+        public OAuthLogic AuthenticationLogic { private get; set; }
         #endregion
 
         #region IConsumerStore implementation

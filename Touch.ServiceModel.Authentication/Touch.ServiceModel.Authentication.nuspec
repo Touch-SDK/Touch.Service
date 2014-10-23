@@ -2,16 +2,18 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Touch.ServiceModel.Authentication</id>
-        <version>1.0.8</version>
+        <version>1.0.10</version>
         <authors>Artem Abashev</authors>
         <projectUrl>https://github.com/Touch-SDK/Touch.Service</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Touch SDK service OAuth support.</description>
         <dependencies>
             <dependency id="DevDefined.OAuth" version="0.1" />
-            <dependency id="Touch.Business.Authentication" version="1.0.7" />
             <dependency id="Touch" version="1.0.5" />
-            <dependency id="Touch.ServiceModel" version="1.0.5" />
+            <dependency id="Touch.Business.Authentication" version="1.0.14" />
+            <dependency id="Touch.ServiceModel" version="1.0.7" />
+            <dependency id="DotNetOpenAuth.OAuth2.AuthorizationServer" version="4.3.4.13329" />
+            <dependency id="DotNetOpenAuth.OAuth2.ResourceServer" version="4.3.4.13329" />
         </dependencies>
     </metadata>
     <files>

@@ -25,7 +25,7 @@ namespace Touch.ServiceModel.Authorization
         public ICryptoKeyStore CryptoKeyStore { get; set; }
         public INonceStore NonceStore { get; set; }
         public OAuth2Logic Logic { private get; set; }
-        public IOAuth2Provider Provider { private get; set; }
+        public IOAuth2Manager Provider { private get; set; }
         #endregion
 
         #region Configuration

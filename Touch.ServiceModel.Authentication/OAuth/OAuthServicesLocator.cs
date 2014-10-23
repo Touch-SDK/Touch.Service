@@ -6,16 +6,18 @@ namespace Touch.ServiceModel.OAuth
     sealed public class OAuthServicesLocator
     {
         #region Instance
-        public OAuthServicesLocator(IOAuthProvider oAuthProvider, IOAuthProvider xAuthProvider, OAuthTokenStore tokenStore)
+        public OAuthServicesLocator(IOAuthProvider oAuthProvider, IOAuthProvider xAuthProviderCustomers, IOAuthProvider xAuthProviderUsers, OAuthTokenStore tokenStore)
         {
             OAuthProvider = oAuthProvider;
-            XAuthProvider = xAuthProvider;
+            XAuthProviderCustomers = xAuthProviderCustomers;
+            XAuthProviderUsers = xAuthProviderUsers;
             TokenStore = tokenStore;
         }
 
         public IOAuthProvider OAuthProvider { get; private set; }
 
-        public IOAuthProvider XAuthProvider { get; private set; }
+        public IOAuthProvider XAuthProviderCustomers { get; private set; }
+        public IOAuthProvider XAuthProviderUsers { get; private set; }
 
         public OAuthTokenStore TokenStore { get; private set; }
         #endregion

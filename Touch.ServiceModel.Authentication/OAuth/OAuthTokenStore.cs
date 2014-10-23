@@ -13,7 +13,7 @@ namespace Touch.ServiceModel.OAuth
     sealed public class OAuthTokenStore : ITokenStore
     {
         #region Dependencies
-        public AuthenticationLogic AuthenticationLogic { private get; set; }
+        public OAuthLogic AuthenticationLogic { private get; set; }
         #endregion
 
         #region Public methods

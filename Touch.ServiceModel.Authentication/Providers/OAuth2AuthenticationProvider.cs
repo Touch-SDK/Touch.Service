@@ -7,7 +7,7 @@ namespace Touch.Providers
     /// <summary>
     /// WCF OAuth2 authentication provider.
     /// </summary>
-    sealed public class WcfOAuthProvider : IOAuth2Provider
+    sealed public class OAuth2AuthenticationProvider : IOAuth2Provider
     {
         #region IOAuth2Provider implementation
         OAuth2User IOAuth2Provider.CurrentUser

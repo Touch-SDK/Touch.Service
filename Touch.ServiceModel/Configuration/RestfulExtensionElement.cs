@@ -8,7 +8,15 @@ namespace Touch.ServiceModel.Configuration
     sealed public class RestfulExtensionElement : BehaviorExtensionElement
     {
         #region Configuration
-
+        /// <summary>
+        /// Enable CORS.
+        /// </summary>
+        [ConfigurationProperty("enableCors", DefaultValue = false)]
+        public bool EnableCors
+        {
+            get { return Convert.ToBoolean(this["enableCors"]); }
+            set { this["enableCors"] = value; }
+        }
         #endregion
 
         #region Methods
@@ -20,7 +28,7 @@ namespace Touch.ServiceModel.Configuration
         /// <summary>
         /// Creates a behavior extension based on the current configuration settings.
         /// </summary>
-        protected override object CreateBehavior() { return new RestfulBehavior(); } 
+        protected override object CreateBehavior() { return new RestfulBehavior { EnableCors = EnableCors }; } 
         #endregion
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Net.Http;
-using System.ServiceModel.Web;
+﻿using System.Net.Http;
+using System.Web;
 using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OAuth2;
+using DotNetOpenAuth.OAuth2.Messages;
 
 namespace Touch.ServiceModel.Authorization
 {
@@ -10,21 +10,26 @@ namespace Touch.ServiceModel.Authorization
     {
         public static OutgoingWebResponse HandleWcfTokenRequest(this AuthorizationServer server, HttpRequestMessage request)
         {
-            var context = WebOperationContext.Current;
+            var context = HttpContext.Current;
 
             if (context != null)
             {
-                var uri = context.IncomingRequest.UriTemplateMatch.RequestUri;
-                var builder = new UriBuilder(Uri.UriSchemeHttps, uri.Host, uri.Port, uri.AbsolutePath);
-
-                request = new HttpRequestMessage(new HttpMethod(context.IncomingRequest.Method), builder.Uri)
-                {
-                    Content = request.Content,
-                    Version = request.Version
-                };
+                return server.HandleTokenRequest(new HttpRequestWrapper(context.Request));
             }
 
-            return server.HandleTokenRequest(request);
+            return null;
+        }
+
+        public static EndUserAuthorizationRequest ReadWcfAuthorizationRequest(this AuthorizationServer server)
+        {
+            var context = HttpContext.Current;
+
+            if (context != null)
+            {
+                return server.ReadAuthorizationRequest(new HttpRequestWrapper(context.Request));
+            }
+
+            return null;
         }
     }
 }

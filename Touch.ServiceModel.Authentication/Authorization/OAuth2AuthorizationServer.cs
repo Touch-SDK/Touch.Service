@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DotNetOpenAuth.Messaging.Bindings;
 using DotNetOpenAuth.OAuth2;
 using DotNetOpenAuth.OAuth2.ChannelElements;
 using DotNetOpenAuth.OAuth2.Messages;
-using Touch.Logic;
+using Touch.Domain;
 using Touch.Providers;
 using Touch.ServiceModel.OAuth;
 
@@ -15,8 +16,8 @@ namespace Touch.ServiceModel.Authorization
         #region .ctor
         public OAuth2AuthorizationServer()
         {
-            AccessTokenLifeSpan = TimeSpan.FromDays(1);
-            UseRefreshTokens = true;
+            AccessTokenLifeSpan = TimeSpan.MaxValue;
+            UseRefreshTokens = false;
         }
         #endregion
 
@@ -24,7 +25,6 @@ namespace Touch.ServiceModel.Authorization
         public IOAuth2CryptoService CryptoService { private get; set; }
         public ICryptoKeyStore CryptoKeyStore { get; set; }
         public INonceStore NonceStore { get; set; }
-        public OAuth2Logic Logic { private get; set; }
         public IOAuth2Manager Provider { private get; set; }
         #endregion
 
@@ -43,18 +43,34 @@ namespace Touch.ServiceModel.Authorization
         {
             var accessToken = new AuthorizationServerAccessToken
             {
-                Lifetime = AccessTokenLifeSpan,
                 ResourceServerEncryptionKey = CryptoService.GetEncryptionProvider(),
                 AccessTokenSigningKey = CryptoService.GetSigningProvider(),
-                ClientIdentifier = accessTokenRequestMessage.ClientIdentifier,
-                User = accessTokenRequestMessage.UserName
+                ClientIdentifier = accessTokenRequestMessage.ClientIdentifier
             };
 
-            foreach (var scope in accessTokenRequestMessage.Scope)
-                accessToken.Scope.Add(scope);
+            if (AccessTokenLifeSpan < TimeSpan.MaxValue)
+                accessToken.Lifetime = AccessTokenLifeSpan;
 
-            var user = Provider.GetUser(accessTokenRequestMessage.UserName, accessTokenRequestMessage.ClientIdentifier);
-            if (user == null) throw new OperationCanceledException("User not found.");
+            OAuth2User user;
+
+            if (!string.IsNullOrEmpty(accessTokenRequestMessage.UserName))
+            {
+                user = Provider.GetUser(accessTokenRequestMessage.UserName, accessTokenRequestMessage.ClientIdentifier);
+                if (user == null) throw new ArgumentOutOfRangeException("UserName", "User not found.");
+            }
+            else
+            {
+                user = Provider.CreateUser(accessTokenRequestMessage.ClientIdentifier);
+            }
+
+            accessToken.User = user.UserName;
+
+            var roles = accessTokenRequestMessage.Scope != null && accessTokenRequestMessage.Scope.Count > 0
+                ? user.Roles.Intersect(accessTokenRequestMessage.Scope)
+                : user.Roles;
+
+            foreach (var scope in roles)
+                accessToken.Scope.Add(scope);
 
             accessToken.ExtraData["oauth_user_token"] = user.HashKey;
             accessToken.ExtraData["oauth_security_token"] = user.SecurityToken;
@@ -65,7 +81,7 @@ namespace Touch.ServiceModel.Authorization
 
         public IClientDescription GetClient(string clientIdentifier)
         {
-            var client = Logic.GetClient(clientIdentifier);
+            var client = Provider.GetClient(clientIdentifier);
 
             if (client == null)
                 throw new ArgumentOutOfRangeException("clientIdentifier");

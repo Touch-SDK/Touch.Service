@@ -99,6 +99,7 @@
     <Compile Include="Authorization\RoleProviderPrincipal.cs" />
     <Compile Include="OAuth\OAuth2ClientDescription.cs" />
     <Compile Include="OAuth\OAuth2KeyStore.cs" />
+    <Compile Include="OAuth\OAuth2SimpleKeyStore.cs" />
     <Compile Include="OAuth\OAuthConsumerStore.cs" />
     <Compile Include="OAuth\OAuthContextExtension.cs" />
     <Compile Include="OAuth\OAuthNonceGenerator.cs" />

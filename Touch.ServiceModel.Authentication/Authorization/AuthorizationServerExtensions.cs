@@ -8,7 +8,7 @@ namespace Touch.ServiceModel.Authorization
 {
     public static class AuthorizationServerExtensions
     {
-        public static OutgoingWebResponse HandleWcfTokenRequest(this AuthorizationServer server, HttpRequestMessage request)
+        public static OutgoingWebResponse HandleWcfTokenRequest(this AuthorizationServer server)
         {
             var context = HttpContext.Current;
 

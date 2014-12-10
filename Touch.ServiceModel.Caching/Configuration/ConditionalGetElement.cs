@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Configuration;
 using System.ServiceModel.Configuration;
-using System.Web;
 using Touch.ServiceModel.Description;
 
 namespace Touch.ServiceModel.Configuration
@@ -15,20 +13,7 @@ namespace Touch.ServiceModel.Configuration
 
         protected override object CreateBehavior()
         {
-            return new ConditionalGetBehavior { ProviderName = ProviderName };
-        }
-
-        [ConfigurationProperty("providerName", IsRequired = true)]
-        public string ProviderName
-        {
-            get
-            {
-                return this["providerName"] as string;
-            }
-            set
-            {
-                this["providerName"] = value;
-            }
+            return new ConditionalGetBehavior();
         }
     }
 }

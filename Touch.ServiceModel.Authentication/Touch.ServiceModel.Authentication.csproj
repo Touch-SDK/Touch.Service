@@ -79,11 +79,11 @@
       <HintPath>..\packages\Touch.1.0.7\lib\Touch.dll</HintPath>
     </Reference>
     <Reference Include="Touch.Business.Authentication">
-      <HintPath>..\packages\Touch.Business.Authentication.1.0.14\lib\Touch.Business.Authentication.dll</HintPath>
+      <HintPath>..\packages\Touch.Business.Authentication.1.0.15\lib\Touch.Business.Authentication.dll</HintPath>
     </Reference>
     <Reference Include="Touch.ServiceModel, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Touch.ServiceModel.1.0.6\lib\Touch.ServiceModel.dll</HintPath>
+      <HintPath>..\packages\Touch.ServiceModel.1.0.8\lib\Touch.ServiceModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

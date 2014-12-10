@@ -4,39 +4,29 @@ using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
-using Touch.ServiceModel.Providers;
+using Touch.Service;
 
 namespace Touch.ServiceModel.Dispatcher
 {
-    public class ConditionalGetMessageInspector : HttpDispatchMessageInspector
+    public sealed class ConditionalGetMessageInspector : HttpDispatchMessageInspector
     {
-        public string ProviderName { get; set; }
-
-        private string ETag
-        {
-            get { return ResponseMetadataProvider.GetInstance(ProviderName).ETag; }
-        }
-
-        private DateTime? LastModified
-        {
-            get { return ResponseMetadataProvider.GetInstance(ProviderName).LastModified; }
-        }
-
         public override object AfterReceiveRequest(ref Message request, HttpRequestMessageProperty httpRequest, IClientChannel channel, InstanceContext instanceContext)
         {
-            if (!String.Equals(httpRequest.Method, "GET", StringComparison.Ordinal))
+            if (!string.Equals(httpRequest.Method, "GET", StringComparison.Ordinal))
                 return null;
 
             var context = WebOperationContext.Current;
-            if (context == null) throw new NotSupportedException("Missing WebOperationContext");
+            if (context == null) throw new NotSupportedException();
 
-            if (context.IncomingRequest.IfNoneMatch != null && ETag != null && context.IncomingRequest.IfNoneMatch.Contains(ETag))
+            var metadata = GetMetadata();
+
+            if (metadata != null && context.IncomingRequest.IfNoneMatch != null && context.IncomingRequest.IfNoneMatch.Contains(metadata.Token))
             {
                 instanceContext.Abort();
                 return GetState.Unmodified;
             }
 
-            if (context.IncomingRequest.IfModifiedSince != null && LastModified != null && context.IncomingRequest.IfModifiedSince >= LastModified)
+            if (metadata != null && context.IncomingRequest.IfModifiedSince != null && context.IncomingRequest.IfModifiedSince >= metadata.LastModified)
             {
                 instanceContext.Abort();
                 return GetState.Unmodified;
@@ -56,12 +46,31 @@ namespace Touch.ServiceModel.Dispatcher
                 httpResponse.SuppressEntityBody = true;
                 return;
             }
-            
-            if (ETag != null)
-                httpResponse.Headers.Add("ETag", ETag);
 
-            if (LastModified != null)
-                httpResponse.Headers.Add("Last-Modified", LastModified.Value.ToUniversalTime().ToString("R"));
+            var metadata = GetMetadata();
+
+            if (metadata != null)
+            {
+                httpResponse.Headers.Add("ETag", metadata.Token);
+                httpResponse.Headers.Add("Last-Modified", metadata.LastModified.ToUniversalTime().ToString("R"));
+            }
+        }
+
+        private static ICacheMetadata GetMetadata()
+        {
+            var context = WebOperationContext.Current;
+            if (context == null) return null;
+
+            var service = OperationContext.Current.InstanceContext.GetServiceInstance() as ICacheableService;
+            if (service == null || context.IncomingRequest.UriTemplateMatch == null) return null;
+
+            var operation = (string)context.IncomingRequest.UriTemplateMatch.Data;
+            var parameters = context.IncomingRequest.UriTemplateMatch.BoundVariables.AllKeys.Select(x => context.IncomingRequest.UriTemplateMatch.BoundVariables[x]).ToArray();
+
+            var cacheKey = service.GetCacheKey(operation, parameters);
+            if (cacheKey == null) return null;
+
+            return service.GetMetadata(cacheKey);
         }
 
         private enum GetState { Modified, Unmodified }

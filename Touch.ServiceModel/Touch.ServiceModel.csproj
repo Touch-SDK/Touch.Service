@@ -57,6 +57,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\ICacheableService.cs" />
+    <Compile Include="Caching\ICacheMetadata.cs" />
     <Compile Include="Configuration\ApiConnectionStringBuilder.cs" />
     <Compile Include="Configuration\ConfigurationResolver.cs" />
     <Compile Include="Configuration\EnvironmentValues.cs" />

@@ -8,8 +8,6 @@ namespace Touch.ServiceModel.Description
 {
     sealed public class ConditionalGetBehavior : IEndpointBehavior
     {
-        public string ProviderName { get; set; }
-
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
         }
@@ -20,7 +18,7 @@ namespace Touch.ServiceModel.Description
 
         public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
         {
-            endpointDispatcher.DispatchRuntime.MessageInspectors.Add(new ConditionalGetMessageInspector { ProviderName = ProviderName });
+            endpointDispatcher.DispatchRuntime.MessageInspectors.Add(new ConditionalGetMessageInspector());
         }
 
         public void Validate(ServiceEndpoint endpoint)

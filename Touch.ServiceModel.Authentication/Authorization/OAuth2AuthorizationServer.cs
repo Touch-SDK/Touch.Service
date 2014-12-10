@@ -50,17 +50,25 @@ namespace Touch.ServiceModel.Authorization
 
             if (AccessTokenLifeSpan < TimeSpan.MaxValue)
                 accessToken.Lifetime = AccessTokenLifeSpan;
-
+            
             OAuth2User user;
 
             if (!string.IsNullOrEmpty(accessTokenRequestMessage.UserName))
             {
-                user = Provider.GetUser(accessTokenRequestMessage.UserName, accessTokenRequestMessage.ClientIdentifier);
-                if (user == null) throw new ArgumentOutOfRangeException("UserName", "User not found.");
+                user = Provider.GetUserByUsername(accessTokenRequestMessage.UserName, accessTokenRequestMessage.ClientIdentifier);
+                if (user == null) throw new ArgumentOutOfRangeException("username", "User not found.");
+            }
+            else if (accessToken.ExtraData.ContainsKey("ticket_id"))
+            {
+                var token = accessToken.ExtraData["ticket_id"];
+                user = Provider.GetUserByTicket(token, accessTokenRequestMessage.ClientIdentifier);
+                if (user == null) throw new ArgumentOutOfRangeException("ticket_id", "Ticket not found.");
+
+                Provider.ConsumeUserTicket(token, accessTokenRequestMessage.ClientIdentifier);
             }
             else
             {
-                user = Provider.CreateUser(accessTokenRequestMessage.ClientIdentifier);
+                throw new NotSupportedException("Unknown authorization workflow.");
             }
 
             accessToken.User = user.UserName;
@@ -72,6 +80,7 @@ namespace Touch.ServiceModel.Authorization
             foreach (var scope in roles)
                 accessToken.Scope.Add(scope);
 
+            accessToken.ExtraData.Clear();
             accessToken.ExtraData["oauth_user_token"] = user.HashKey;
             accessToken.ExtraData["oauth_security_token"] = user.SecurityToken;
 
@@ -92,7 +101,6 @@ namespace Touch.ServiceModel.Authorization
         public bool IsAuthorizationValid(IAuthorizationDescription authorization)
         {
             return false;
-            //return IsAuthorizationValid(authorization.Scope, authorization.ClientIdentifier, authorization.UtcIssued, authorization.User);
         }
 
         public AutomatedUserAuthorizationCheckResponse CheckAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest)
@@ -101,7 +109,7 @@ namespace Touch.ServiceModel.Authorization
 
             if (Provider.ValidateUserCredentials(userName, password, accessRequest.ClientIdentifier))
             {
-                var user = Provider.GetUser(userName, accessRequest.ClientIdentifier);
+                var user = Provider.GetUserByUsername(userName, accessRequest.ClientIdentifier);
 
                 response = new AutomatedUserAuthorizationCheckResponse(accessRequest, true, userName);
 
@@ -121,62 +129,5 @@ namespace Touch.ServiceModel.Authorization
             return response;
         }
         #endregion
-
-        /*public bool CanBeAutoApproved(EndUserAuthorizationRequest authorizationRequest)
-        {
-            if (authorizationRequest == null) throw new ArgumentNullException("authorizationRequest");
-
-            // NEVER issue an auto-approval to a client that would end up getting an access token immediately
-            // (without a client secret), as that would allow arbitrary clients to masquarade as an approved client
-            // and obtain unauthorized access to user data.
-            if (authorizationRequest.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode)
-            {
-                // Never issue auto-approval if the client secret is blank, since that too makes it easy to spoof
-                // a client's identity and obtain unauthorized access.
-                var requestingClient = MvcApplication.DataContext.Clients.First(c => c.ClientIdentifier == authorizationRequest.ClientIdentifier);
-                if (!string.IsNullOrEmpty(requestingClient.ClientSecret))
-                {
-                    return this.IsAuthorizationValid(
-                        authorizationRequest.Scope,
-                        authorizationRequest.ClientIdentifier,
-                        DateTime.UtcNow,
-                        HttpContext.Current.User.Identity.Name);
-                }
-            }
-
-            // Default to not auto-approving.
-            return false;
-        }*/
-
-        /*private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username)
-        {
-            // If db precision exceeds token time precision (which is common), the following query would
-            // often disregard a token that is minted immediately after the authorization record is stored in the db.
-            // To compensate for this, we'll increase the timestamp on the token's issue date by 1 second.
-            issuedUtc += TimeSpan.FromSeconds(1);
-            var grantedScopeStrings = from auth in MvcApplication.DataContext.ClientAuthorizations
-                                      where
-                                          auth.Client.ClientIdentifier == clientIdentifier &&
-                                          auth.CreatedOnUtc <= issuedUtc &&
-                                          (!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
-                                          auth.User.OpenIDClaimedIdentifier == username
-                                      select auth.Scope;
-
-            if (!grantedScopeStrings.Any())
-            {
-                // No granted authorizations prior to the issuance of this token, so it must have been revoked.
-                // Even if later authorizations restore this client's ability to call in, we can't allow
-                // access tokens issued before the re-authorization because the revoked authorization should
-                // effectively and permanently revoke all access and refresh tokens.
-                return false;
-            }
-
-            var grantedScopes = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
-
-            foreach (string scope in grantedScopeStrings)
-                grantedScopes.UnionWith(OAuthUtilities.SplitScopes(scope));
-
-            return requestedScopes.IsSubsetOf(grantedScopes);
-        }*/
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IdentityModel.Policy;
 using System.Linq;
 using System.Security.Principal;
@@ -15,15 +16,8 @@ namespace Touch.ServiceModel.Authorization
 {
     public sealed class OAuth2AuthorizationManager : ServiceAuthorizationManager
     {
-        #region .ctor
-        public OAuth2AuthorizationManager()
-        {
-            Service = CryptoService;
-        } 
-        #endregion
-
         #region Dependencies
-        public static IOAuth2CryptoService CryptoService { private get; set; }
+        public static Func<IOAuth2CryptoService> CryptoServiceProvider { private get; set; }
         public IOAuth2CryptoService Service { private get; set; }
         #endregion
 
@@ -31,6 +25,12 @@ namespace Touch.ServiceModel.Authorization
         {
             if (!base.CheckAccessCore(operationContext))
                 return false;
+
+            if (Service == null)
+                Service = CryptoServiceProvider();
+
+            if (Service == null)
+                throw new ConfigurationErrorsException("No IOAuth2CryptoService provided.");
 
             try
             {

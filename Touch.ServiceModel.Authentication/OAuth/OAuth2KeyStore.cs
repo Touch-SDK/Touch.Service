@@ -24,15 +24,7 @@ namespace Touch.ServiceModel.OAuth
                 IssueDate = timestampUtc.ToDocumentString()
             };
 
-            try
-            {
-                NonceLogic.StoreNonce(entry);
-                return true; //if the context+nonce+timestamp (combination) was not previously in the database.
-            }
-            catch
-            {
-                return false; //if the nonce was stored previously with the same timestamp and context.
-            }
+            return NonceLogic.StoreNonce(entry);
         }
         #endregion
 

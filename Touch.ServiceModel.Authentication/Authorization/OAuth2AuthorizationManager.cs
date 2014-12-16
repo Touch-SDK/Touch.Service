@@ -10,6 +10,7 @@ using System.ServiceModel.Security;
 using System.Web;
 using DotNetOpenAuth.OAuth2;
 using Touch.Domain;
+using Touch.Providers;
 using Touch.ServiceModel.OAuth;
 
 namespace Touch.ServiceModel.Authorization
@@ -17,20 +18,21 @@ namespace Touch.ServiceModel.Authorization
     public sealed class OAuth2AuthorizationManager : ServiceAuthorizationManager
     {
         #region Dependencies
-        public static Func<IOAuth2CryptoService> CryptoServiceProvider { private get; set; }
+        public static Func<OAuth2AuthorizationManager> InstanceProvider { private get; set; }
         public IOAuth2CryptoService Service { private get; set; }
+        public IOAuth2Provider Provider { private get; set; }
         #endregion
 
         protected override bool CheckAccessCore(OperationContext operationContext)
         {
+            if (InstanceProvider == null) throw new ConfigurationErrorsException("InstanceProvider is not set.");
+            return InstanceProvider().CheckOAuthAccess(operationContext);
+        }
+
+        internal bool CheckOAuthAccess(OperationContext operationContext)
+        {
             if (!base.CheckAccessCore(operationContext))
                 return false;
-
-            if (Service == null)
-                Service = CryptoServiceProvider();
-
-            if (Service == null)
-                throw new ConfigurationErrorsException("No IOAuth2CryptoService provided.");
 
             try
             {
@@ -39,7 +41,7 @@ namespace Touch.ServiceModel.Authorization
                 var requestUri = operationContext.RequestContext.RequestMessage.Properties.Via;
 
                 IPrincipal principal;
-                OAuth2User user = null;
+                OAuth2Access access = null;
 
                 using (var signing = Service.GetSigningProvider())
                 using (var encrypting = Service.GetEncryptionProvider())
@@ -52,30 +54,22 @@ namespace Touch.ServiceModel.Authorization
                         var accessToken = resourceServer.GetAccessToken(new HttpRequestWrapper(httpContext.Request));
 
                         if (accessToken != null)
-                        {
-                            user = new OAuth2User
+                        {                            
+                            access = new OAuth2Access
                             {
+                                HashKey = accessToken.User,
                                 ClientId = accessToken.ClientIdentifier,
-                                UserName = accessToken.User,
-                                Roles = accessToken.Scope.ToArray()
+                                Roles = accessToken.Scope.ToArray(),
+                                IssueDate = accessToken.UtcIssued.ToDocumentString()
                             };
-
-                            if (!accessToken.ExtraData.ContainsKey("oauth_user_token"))
-                                throw new OperationCanceledException("User token not found.");
-
-                            if (!accessToken.ExtraData.ContainsKey("oauth_security_token"))
-                                throw new OperationCanceledException("Security token not found.");
-                            
-                            user.HashKey = accessToken.ExtraData["oauth_user_token"];
-                            user.SecurityToken = accessToken.ExtraData["oauth_security_token"];
                         }
                     }
                 }
-                
+
                 if (principal != null)
                 {
                     var policy = new OAuth2PrincipalAuthorizationPolicy(principal);
-                    var policies = new List<IAuthorizationPolicy> {policy};
+                    var policies = new List<IAuthorizationPolicy> { policy };
 
                     var securityContext = new ServiceSecurityContext(policies.AsReadOnly());
 
@@ -98,8 +92,8 @@ namespace Touch.ServiceModel.Authorization
                     operationContext.IncomingMessageProperties.Security.ServiceSecurityContext = securityContext;
                     securityContext.AuthorizationContext.Properties["Identities"] = new List<IIdentity> { identity };
 
-                    if (user != null)
-                        operationContext.IncomingMessageProperties["OAuth2User"] = user;
+                    if (access != null)
+                        Provider.ActiveAccess = access;
 
                     return true;
                 }

@@ -50,42 +50,8 @@ namespace Touch.ServiceModel.Authorization
 
             if (AccessTokenLifeSpan < TimeSpan.MaxValue)
                 accessToken.Lifetime = AccessTokenLifeSpan;
-            
-            OAuth2User user;
 
-            if (!string.IsNullOrEmpty(accessTokenRequestMessage.UserName))
-            {
-                user = Provider.GetUserByUsername(accessTokenRequestMessage.UserName, accessTokenRequestMessage.ClientIdentifier);
-                if (user == null) throw new ArgumentOutOfRangeException("username", "User not found.");
-            }
-            else if (accessToken.ExtraData.ContainsKey("ticket_id"))
-            {
-                var token = accessToken.ExtraData["ticket_id"];
-                user = Provider.GetUserByTicket(token, accessTokenRequestMessage.ClientIdentifier);
-                if (user == null) throw new ArgumentOutOfRangeException("ticket_id", "Ticket not found.");
-
-                Provider.ConsumeUserTicket(token, accessTokenRequestMessage.ClientIdentifier);
-            }
-            else
-            {
-                throw new NotSupportedException("Unknown authorization workflow.");
-            }
-
-            accessToken.User = user.UserName;
-
-            var roles = accessTokenRequestMessage.Scope != null && accessTokenRequestMessage.Scope.Count > 0
-                ? user.Roles.Intersect(accessTokenRequestMessage.Scope)
-                : user.Roles;
-
-            foreach (var scope in roles)
-                accessToken.Scope.Add(scope);
-
-            accessToken.ExtraData.Clear();
-            accessToken.ExtraData["oauth_user_token"] = user.HashKey;
-            accessToken.ExtraData["oauth_security_token"] = user.SecurityToken;
-
-            var result = new AccessTokenResult(accessToken) { AllowRefreshToken = UseRefreshTokens };
-            return result;
+            return new AccessTokenResult(accessToken) { AllowRefreshToken = UseRefreshTokens };
         }
 
         public IClientDescription GetClient(string clientIdentifier)
@@ -100,7 +66,23 @@ namespace Touch.ServiceModel.Authorization
 
         public bool IsAuthorizationValid(IAuthorizationDescription authorization)
         {
-            return false;
+            var access = Provider.GetAccess(authorization.User, authorization.ClientIdentifier);
+
+            if (access == null) 
+                return false;
+
+            var issueDate = access.IssueDate.FromDocumentString() + TimeSpan.FromSeconds(5);
+
+            if (authorization.UtcIssued > issueDate)
+                return false;
+
+            if (!authorization.Scope.Any())
+                return true;
+
+            var client = Provider.GetClient(authorization.ClientIdentifier);
+
+            var result = authorization.Scope.IsSubsetOf(client.Roles);
+            return result;
         }
 
         public AutomatedUserAuthorizationCheckResponse CheckAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest)
@@ -109,11 +91,11 @@ namespace Touch.ServiceModel.Authorization
 
             if (Provider.ValidateUserCredentials(userName, password, accessRequest.ClientIdentifier))
             {
-                var user = Provider.GetUserByUsername(userName, accessRequest.ClientIdentifier);
+                var access = Provider.GrantAccess(userName, accessRequest.ClientIdentifier);
 
-                response = new AutomatedUserAuthorizationCheckResponse(accessRequest, true, userName);
+                response = new AutomatedUserAuthorizationCheckResponse(accessRequest, true, access.HashKey);
 
-                var scope = new HashSet<string>(user.Roles);
+                var scope = new HashSet<string>(access.Roles);
 
                 if (accessRequest.Scope.Count > 0)
                     scope.IntersectWith(accessRequest.Scope);

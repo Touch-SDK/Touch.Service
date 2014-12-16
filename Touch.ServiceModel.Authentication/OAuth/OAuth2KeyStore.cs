@@ -10,7 +10,8 @@ namespace Touch.ServiceModel.OAuth
     public sealed class OAuth2KeyStore : INonceStore, ICryptoKeyStore
     {
         #region Dependencies
-        public OAuth2Logic Logic { private get; set; }
+        public IOAuth2KeyLogic KeyLogic { private get; set; }
+        public IOAuth2NonceLogic NonceLogic { private get; set; }
         #endregion
 
         #region INonceStore Members
@@ -25,7 +26,7 @@ namespace Touch.ServiceModel.OAuth
 
             try
             {
-                Logic.StoreNonce(entry);
+                NonceLogic.StoreNonce(entry);
                 return true; //if the context+nonce+timestamp (combination) was not previously in the database.
             }
             catch
@@ -38,7 +39,7 @@ namespace Touch.ServiceModel.OAuth
         #region ICryptoKeyStore Members
         public CryptoKey GetKey(string bucket, string handle)
         {
-            var key = Logic.GetKey(bucket, handle);
+            var key = KeyLogic.GetKey(bucket, handle);
 
             return key != null
                 ? new CryptoKey(Convert.FromBase64String(key.Secret), key.ExpirationDate.FromDocumentString())
@@ -47,7 +48,7 @@ namespace Touch.ServiceModel.OAuth
 
         public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket)
         {
-            var result = (from key in Logic.GetKeys(bucket)
+            var result = (from key in KeyLogic.GetKeys(bucket)
                           let expires = key.ExpirationDate.FromDocumentString()
                           orderby expires descending
                           select new KeyValuePair<string, CryptoKey>(key.Handle, new CryptoKey(Convert.FromBase64String(key.Secret), expires))).ToArray();
@@ -64,12 +65,12 @@ namespace Touch.ServiceModel.OAuth
                 ExpirationDate = key.ExpiresUtc.ToDocumentString()
             };
 
-            Logic.StoreKey(entry);
+            KeyLogic.StoreKey(entry);
         }
 
         public void RemoveKey(string bucket, string handle)
         {
-            Logic.RemoveKey(bucket, handle);
+            KeyLogic.RemoveKey(bucket, handle);
         }
         #endregion
     }

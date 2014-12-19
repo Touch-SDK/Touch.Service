@@ -52,7 +52,7 @@ namespace Touch.ServiceModel.Authorization
                     if (principal != null && httpContext != null)
                     {
                         var accessToken = resourceServer.GetAccessToken(new HttpRequestWrapper(httpContext.Request));
-
+                        
                         if (accessToken != null)
                         {                            
                             access = new OAuth2Access
@@ -62,11 +62,17 @@ namespace Touch.ServiceModel.Authorization
                                 Roles = accessToken.Scope.ToArray(),
                                 IssueDate = accessToken.UtcIssued.ToDocumentString()
                             };
+
+                            foreach (var pair in accessToken.ExtraData)
+                                access.ExtraData[pair.Key] = pair.Value;
+
+                            if (accessToken.Lifetime != null && accessToken.UtcIssued + accessToken.Lifetime < DateTime.UtcNow)
+                                access = null;
                         }
                     }
                 }
 
-                if (principal != null)
+                if (access != null)
                 {
                     var policy = new OAuth2PrincipalAuthorizationPolicy(principal);
                     var policies = new List<IAuthorizationPolicy> { policy };
@@ -92,8 +98,7 @@ namespace Touch.ServiceModel.Authorization
                     operationContext.IncomingMessageProperties.Security.ServiceSecurityContext = securityContext;
                     securityContext.AuthorizationContext.Properties["Identities"] = new List<IIdentity> { identity };
 
-                    if (access != null)
-                        Provider.ActiveAccess = access;
+                    Provider.ActiveAccess = access;
 
                     return true;
                 }

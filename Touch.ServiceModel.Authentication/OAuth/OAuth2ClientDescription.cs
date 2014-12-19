@@ -22,7 +22,7 @@ namespace Touch.ServiceModel.OAuth
         #region IClientDescription members
         public ClientType ClientType
         {
-            get { return IsPublic ? ClientType.Public : ClientType; }
+            get { return IsPublic ? ClientType.Public : ClientType.Confidential; }
         }
 
         public Uri DefaultCallback

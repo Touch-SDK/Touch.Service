@@ -53,19 +53,9 @@ namespace Touch.ServiceModel.Authorization
             foreach (var pair in access.ExtraData)
                 accessToken.ExtraData[pair.Key] = pair.Value;
 
-            var allowRefreshToken = !client.IsPublic;
+            accessToken.Lifetime = Manager.GetAccessLifeSpan(access);
 
-            if (allowRefreshToken)
-            {
-                var lifetime = Manager.GetAccessLifeSpan(access);
-
-                if (lifetime < TimeSpan.MaxValue)
-                    accessToken.Lifetime = lifetime;
-                else
-                    allowRefreshToken = false;
-            }
-
-            return new AccessTokenResult(accessToken) { AllowRefreshToken = allowRefreshToken };
+            return new AccessTokenResult(accessToken) { AllowRefreshToken = !client.IsPublic };
         }
 
         public IClientDescription GetClient(string clientIdentifier)

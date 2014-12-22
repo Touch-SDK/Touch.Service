@@ -65,9 +65,6 @@ namespace Touch.ServiceModel.Authorization
 
                             foreach (var pair in accessToken.ExtraData)
                                 access.ExtraData[pair.Key] = pair.Value;
-
-                            if (accessToken.Lifetime != null && accessToken.UtcIssued + accessToken.Lifetime < DateTime.UtcNow)
-                                access = null;
                         }
                     }
                 }

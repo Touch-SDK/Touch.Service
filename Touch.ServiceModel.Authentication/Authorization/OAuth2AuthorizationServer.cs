@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IdentityModel.Protocols.WSTrust;
 using System.Linq;
 using System.Reflection;
 using DotNetOpenAuth.Messaging.Bindings;
@@ -53,7 +52,9 @@ namespace Touch.ServiceModel.Authorization
             foreach (var pair in access.ExtraData)
                 accessToken.ExtraData[pair.Key] = pair.Value;
 
-            accessToken.Lifetime = Manager.GetAccessLifeSpan(access);
+            accessToken.Lifetime = client.AccessWindow > 0
+                ? TimeSpan.FromSeconds(client.AccessWindow)
+                : TimeSpan.MaxValue;
 
             return new AccessTokenResult(accessToken) { AllowRefreshToken = !client.IsPublic };
         }
@@ -75,26 +76,15 @@ namespace Touch.ServiceModel.Authorization
             if (Manager == null) throw new ConfigurationErrorsException("Manager was not provided.");
 
             var access = Manager.GetAccess(authorization.User, authorization.ClientIdentifier);
+            if (access == null) return false;
 
-            if (access == null) 
-                return false;
-
-            var issueDate = access.IssueDate.FromDocumentString() + TimeSpan.FromMinutes(1);
-
-            #if DEBUG
-            issueDate += TimeSpan.FromMinutes(9);
-            #endif
+            var issueDate = access.IssueDate.FromDocumentString() + TimeSpan.FromMinutes(10);
 
             if (authorization.UtcIssued > issueDate)
                 return false;
 
-            var accessLifeSpan = Manager.GetAccessLifeSpan(access);
-            var expirationDate = accessLifeSpan < TimeSpan.MaxValue
-                ? issueDate + accessLifeSpan
-                : DateTime.MaxValue;
-
-            if (expirationDate < DateTime.UtcNow)
-                return false;
+            var client = Manager.GetClient(access.ClientId);
+            if (client == null) return false;
 
             if (!authorization.Scope.Any())
                 return true;

@@ -76,21 +76,22 @@ namespace Touch.ServiceModel.Authorization
             if (Manager == null) throw new ConfigurationErrorsException("Manager was not provided.");
 
             var access = Manager.GetAccess(authorization.User, authorization.ClientIdentifier);
-            if (access == null) return false;
-
-            var issueDate = access.IssueDate.FromDocumentString() + TimeSpan.FromMinutes(10);
-
-            if (authorization.UtcIssued > issueDate)
+            if (access == null) 
                 return false;
 
             var client = Manager.GetClient(access.ClientId);
-            if (client == null) return false;
+            if (client == null) 
+                return false;
 
-            if (!authorization.Scope.Any())
-                return true;
+            var issueDate = access.IssueDate.FromDocumentString() + TimeSpan.FromMinutes(10);
 
-            var result = authorization.Scope.IsSubsetOf(access.Roles);
-            return result;
+            if (client.IsPublic && authorization.UtcIssued > issueDate)
+                return false;
+
+            if (authorization.Scope.Any() && !authorization.Scope.IsSubsetOf(access.Roles))
+                return false;
+
+            return true;
         }
 
         public AutomatedUserAuthorizationCheckResponse CheckAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest)

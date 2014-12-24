@@ -49,6 +49,11 @@ namespace Touch.ServiceModel.OAuth
 
         public void StoreKey(string bucket, string handle, CryptoKey key)
         {
+            var existingKey = KeyLogic.GetKey(bucket, handle);
+
+            if (existingKey != null)
+                throw new CryptoKeyCollisionException();
+
             var entry = new OAuth2Key
             {
                 Handle = handle,

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Reflection;
 using DotNetOpenAuth.Messaging.Bindings;
 using DotNetOpenAuth.OAuth2;
 using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -43,7 +42,14 @@ namespace Touch.ServiceModel.Authorization
             var client = Manager.GetClient(accessTokenRequestMessage.ClientIdentifier);
             if (client == null) throw new ArgumentOutOfRangeException();
 
-            var accessId = accessTokenRequestMessage.UserName ?? GetUserFromAccessTokenRequest(accessTokenRequestMessage);
+            var accessId = accessTokenRequestMessage.UserName;
+
+            if (accessId == null && accessTokenRequestMessage.ExtraData.ContainsKey("access_id"))
+            {
+                accessId = accessTokenRequestMessage.ExtraData["access_id"];
+                accessTokenRequestMessage.ExtraData.Remove("access_id");
+            }
+
             if (accessId == null) throw new IndexOutOfRangeException("Missing access ID.");
 
             var access = Manager.GetAccess(accessId, accessTokenRequestMessage.ClientIdentifier);
@@ -52,9 +58,8 @@ namespace Touch.ServiceModel.Authorization
             foreach (var pair in access.ExtraData)
                 accessToken.ExtraData[pair.Key] = pair.Value;
 
-            accessToken.Lifetime = client.AccessWindow > 0
-                ? TimeSpan.FromSeconds(client.AccessWindow)
-                : TimeSpan.MaxValue;
+            if (client.AccessWindow > 0)
+                accessToken.Lifetime = TimeSpan.FromSeconds(client.AccessWindow);
 
             return new AccessTokenResult(accessToken) { AllowRefreshToken = !client.IsPublic };
         }
@@ -120,24 +125,6 @@ namespace Touch.ServiceModel.Authorization
             }
 
             return response;
-        }
-        #endregion
-
-        #region Helper methods
-        private static string GetUserFromAccessTokenRequest(IAccessTokenRequest accessTokenRequest)
-        {
-            var authorizationDescription = accessTokenRequest as IAuthorizationDescription;
-            if (authorizationDescription != null) return authorizationDescription.User;
-
-            var accessTokenRequestBase = accessTokenRequest as AccessTokenRequestBase;
-            if (accessTokenRequestBase == null) return null;
-
-            return (from p in accessTokenRequest.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
-                    where typeof(IAuthorizationDescription).IsAssignableFrom(p.PropertyType)
-                    select p.GetValue(accessTokenRequest) as IAuthorizationDescription)
-                    .Where(x => x != null)
-                    .Select(x => x.User)
-                    .FirstOrDefault();
         }
         #endregion
     }

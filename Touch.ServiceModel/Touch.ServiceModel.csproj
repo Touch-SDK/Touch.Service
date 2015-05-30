@@ -62,6 +62,7 @@
     <Compile Include="Configuration\ApiConnectionStringBuilder.cs" />
     <Compile Include="Configuration\ConfigurationResolver.cs" />
     <Compile Include="Configuration\EnvironmentValues.cs" />
+    <Compile Include="Data\JsonErrorDetails.cs" />
     <Compile Include="Data\MultipartParser.cs" />
     <Compile Include="Description\UnitOfWorkServiceBehavior.cs" />
     <Compile Include="Dispatcher\CorsEnabledMessageInspector.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Description\FormEncodingBehavior.cs" />
     <Compile Include="Description\RestfulBehavior.cs" />
     <Compile Include="Dispatcher\HttpOverrideOperationSelector.cs" />
+    <Compile Include="Dispatcher\JsonErrorHandler.cs" />
     <Compile Include="Dispatcher\UnitOfWorkMessageInspector.cs" />
     <Compile Include="Formatters\HtmlFormRequestDispatchFormatter.cs" />
     <Compile Include="Formatters\HtmlFormResponseDispatchFormatter.cs" />
@@ -81,7 +83,9 @@
     <Compile Include="Dispatcher\UnitOfWorkHttpModule.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="UnitOfWork\" />

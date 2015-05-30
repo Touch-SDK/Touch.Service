@@ -17,6 +17,26 @@ namespace Touch.ServiceModel.Configuration
             get { return Convert.ToBoolean(this["enableCors"]); }
             set { this["enableCors"] = value; }
         }
+
+        /// <summary>
+        /// Enable JSON errors.
+        /// </summary>
+        [ConfigurationProperty("jsonErrors", DefaultValue = false)]
+        public bool JsonErrors
+        {
+            get { return Convert.ToBoolean(this["jsonErrors"]); }
+            set { this["jsonErrors"] = value; }
+        }
+
+        /// <summary>
+        /// Show exception details.
+        /// </summary>
+        [ConfigurationProperty("showExceptionDetails", DefaultValue = false)]
+        public bool ShowExceptionDetails
+        {
+            get { return Convert.ToBoolean(this["showExceptionDetails"]); }
+            set { this["showExceptionDetails"] = value; }
+        }
         #endregion
 
         #region Methods
@@ -28,7 +48,15 @@ namespace Touch.ServiceModel.Configuration
         /// <summary>
         /// Creates a behavior extension based on the current configuration settings.
         /// </summary>
-        protected override object CreateBehavior() { return new RestfulBehavior { EnableCors = EnableCors }; } 
+        protected override object CreateBehavior()
+        {
+            return new RestfulBehavior
+            {
+                EnableCors = EnableCors,
+                JsonErrors = JsonErrors,
+                ShowExceptionDetails = ShowExceptionDetails
+            };
+        }
         #endregion
     }
 }

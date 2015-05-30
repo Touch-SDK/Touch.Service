@@ -10,6 +10,8 @@ namespace Touch.ServiceModel.Description
     /// </summary>
     sealed public class RestfulBehavior : WebHttpBehavior
     {
+        public bool JsonErrors { get; set; }
+        public bool ShowExceptionDetails { get; set; }
         public bool EnableCors { get; set; }
 
         override public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
@@ -20,6 +22,12 @@ namespace Touch.ServiceModel.Description
             //Add support for Access-Control-Allow-Origin header
             if (EnableCors)
                 endpointDispatcher.DispatchRuntime.MessageInspectors.Add(new CorsEnabledMessageInspector());
+
+            if (JsonErrors)
+            {
+                endpointDispatcher.ChannelDispatcher.ErrorHandlers.Clear();
+                endpointDispatcher.ChannelDispatcher.ErrorHandlers.Add(new JsonErrorHandler { ShowExceptionDetails = ShowExceptionDetails });
+            }
         }
     }
 }

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using System.ServiceModel.Dispatcher;
 
 namespace Touch.ServiceModel.Dispatcher
 {
     /// <summary>
     /// Unit of work WCF service message inspector.
     /// </summary>
-    sealed public class UnitOfWorkMessageInspector : IDispatchMessageInspector
+    sealed public class UnitOfWorkMessageInspector : HttpDispatchMessageInspector
     {
         #region .ctor
         public UnitOfWorkMessageInspector(IEnumerable<Func<IUnitOfWork>> factories)
@@ -37,8 +36,8 @@ namespace Touch.ServiceModel.Dispatcher
         private readonly object _thisLock = new object();
         #endregion
 
-        #region IDispatchMessageInspector
-        public object AfterReceiveRequest(ref Message request, IClientChannel channel, InstanceContext instanceContext)
+        #region HttpDispatchMessageInspector
+        public override object AfterReceiveRequest(ref Message request, HttpRequestMessageProperty httpRequest, IClientChannel channel, InstanceContext instanceContext)
         {
             var units = new List<IUnitOfWork>();
 
@@ -59,37 +58,36 @@ namespace Touch.ServiceModel.Dispatcher
             var state = new object();
 
             lock (_thisLock)
-            {
                 _activeUnits[state] = units;
-            }
 
             return state;
         }
 
-        public void BeforeSendReply(ref Message reply, object correlationState)
+        public override void BeforeSendReply(ref Message reply, HttpResponseMessageProperty httpResponse, object correlationState)
         {
             if (correlationState == null) return;
 
-            lock (correlationState)
+            lock (_thisLock)
             {
-                if (!_activeUnits.ContainsKey(correlationState)) return;
+                if (!_activeUnits.ContainsKey(correlationState)) 
+                    return;
             }
 
-            Exception error = null;
+            var errors = new List<Exception>();
+            var success = httpResponse.StatusCode >= HttpStatusCode.Continue &&
+                          httpResponse.StatusCode < HttpStatusCode.BadRequest;
 
-            foreach (var unit in _activeUnits[correlationState].Reverse())
+            foreach (var unit in _activeUnits[correlationState])
             {
                 try
                 {
-                    if (error == null && !reply.IsFault)
-                    {
+                    if (!reply.IsFault && success)
                         unit.Commit();
-                    }
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("Error commiting a unit of work: " + e.Message, "UnitOfWork");
-                    error = e;
+                    Trace.WriteLine("Error commiting unit of work: " + e.Message, "UnitOfWork");
+                    errors.Add(e);
                 }
                 finally
                 {
@@ -99,20 +97,16 @@ namespace Touch.ServiceModel.Dispatcher
                     }
                     catch (Exception e)
                     {
-                        Trace.WriteLine("Error disposing a unit of work: " + e.Message, "UnitOfWork");
+                        Trace.WriteLine("Error disposing unit of work: " + e.Message, "UnitOfWork");
                     }
                 }
             }
 
-            lock (correlationState)
-            {
+            lock (_thisLock)
                 _activeUnits.Remove(correlationState);
-            }
 
-            if (error != null)
-            {
-                throw new OperationCanceledException("Unable to finish one or more units of work.", error);
-            }
+            if (errors.Count > 0)
+                throw new AggregateException("Unable to finish one or more units of work.", errors);
         }
         #endregion
     }

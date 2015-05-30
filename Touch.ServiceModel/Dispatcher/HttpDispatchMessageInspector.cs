@@ -19,7 +19,7 @@ namespace Touch.ServiceModel.Dispatcher
 
         void IDispatchMessageInspector.BeforeSendReply(ref Message reply, object correlationState)
         {
-            if (correlationState == null || !(correlationState is InvalidHttpRequest))
+            if (!(correlationState is InvalidHttpRequest))
             {
                 HttpResponseMessageProperty httpResponse;
                 if (reply.Properties.ContainsKey(HttpResponseMessageProperty.Name))

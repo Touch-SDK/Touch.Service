@@ -70,18 +70,21 @@
     <Compile Include="Description\FormEncodingBehavior.cs" />
     <Compile Include="Description\RestfulBehavior.cs" />
     <Compile Include="Dispatcher\HttpOverrideOperationSelector.cs" />
+    <Compile Include="Dispatcher\UnitOfWorkMessageInspector.cs" />
     <Compile Include="Formatters\HtmlFormRequestDispatchFormatter.cs" />
     <Compile Include="Formatters\HtmlFormResponseDispatchFormatter.cs" />
     <Compile Include="Formatters\MessageExtensions.cs" />
     <Compile Include="Formatters\RequestBodyDispatchFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitOfWork\IUnitOfWork.cs" />
-    <Compile Include="UnitOfWork\UnitOfWorkHttpModule.cs" />
-    <Compile Include="UnitOfWork\UnitOfWorkMessageInspector.cs" />
-    <Compile Include="UnitOfWork\UnitOfWorkServiceBehavior.cs" />
+    <Compile Include="IUnitOfWork.cs" />
+    <Compile Include="Dispatcher\UnitOfWorkHttpModule.cs" />
+    <Compile Include="Configuration\UnitOfWorkServiceBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UnitOfWork\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

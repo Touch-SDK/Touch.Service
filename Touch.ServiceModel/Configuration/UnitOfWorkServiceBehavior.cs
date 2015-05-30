@@ -6,8 +6,9 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Configuration;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
+using Touch.ServiceModel.Dispatcher;
 
-namespace Touch.ServiceModel
+namespace Touch.ServiceModel.Configuration
 {
     /// <summary>
     /// Unit of work WCF service behavior.

@@ -6,7 +6,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 
-namespace Touch.ServiceModel
+namespace Touch.ServiceModel.Dispatcher
 {
     /// <summary>
     /// Unit of work WCF service message inspector.
@@ -34,7 +34,7 @@ namespace Touch.ServiceModel
         /// </summary>
         private readonly Dictionary<object, IEnumerable<IUnitOfWork>> _activeUnits;
 
-        private static object _thisLock = new object();
+        private readonly object _thisLock = new object();
         #endregion
 
         #region IDispatchMessageInspector

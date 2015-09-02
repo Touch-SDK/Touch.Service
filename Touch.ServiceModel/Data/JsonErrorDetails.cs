@@ -14,8 +14,8 @@ namespace Touch.ServiceModel
         [DataMember(Name = "message")]
         public string Message { get; set; }
 
-        [DataMember(Name = "reason")]
-        public string Reason { get; set; }
+        [DataMember(Name = "argument")]
+        public string Argument { get; set; }
 
         [DataMember(Name = "type")]
         public string ExceptionType { get; set; }

@@ -50,7 +50,7 @@ namespace Touch.ServiceModel.Dispatcher
                 jsonError.Code = (short) HttpStatusCode.BadRequest;
                 jsonError.Message = err.Detail.Message;
                 jsonError.Name = "BadRequest";
-                jsonError.Reason = err.Reason.ToString();
+                jsonError.Argument = err.Reason.ToString();
                 rmp.StatusCode = HttpStatusCode.BadRequest;
                 rmp.StatusDescription = err.Message;
             }

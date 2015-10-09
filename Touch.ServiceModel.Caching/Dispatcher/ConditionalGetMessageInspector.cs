@@ -20,39 +20,44 @@ namespace Touch.ServiceModel.Dispatcher
 
             var metadata = GetMetadata();
 
-            if (metadata != null && context.IncomingRequest.IfNoneMatch != null && context.IncomingRequest.IfNoneMatch.Contains(metadata.Token))
+            if ((metadata != null && context.IncomingRequest.IfNoneMatch != null && context.IncomingRequest.IfNoneMatch.Contains(metadata.Token)) ||
+                (metadata != null && context.IncomingRequest.IfModifiedSince != null && context.IncomingRequest.IfModifiedSince >= metadata.LastModified))
             {
                 instanceContext.Abort();
-                return GetState.Unmodified;
+                return new CacheState
+                {
+                    State = GetState.Unmodified,
+                    Metadata = metadata
+                };
             }
 
-            if (metadata != null && context.IncomingRequest.IfModifiedSince != null && context.IncomingRequest.IfModifiedSince >= metadata.LastModified)
+            return new CacheState
             {
-                instanceContext.Abort();
-                return GetState.Unmodified;
-            }
-
-            return GetState.Modified;
+                State = GetState.Modified
+            };
         }
 
         public override void BeforeSendReply(ref Message reply, HttpResponseMessageProperty httpResponse, object correlationState)
         {
-            if (correlationState == null)
+            var state = correlationState as CacheState;
+
+            if (state == null)
                 return;
 
-            if ((GetState)correlationState == GetState.Unmodified)
+            if (state.State == GetState.Unmodified)
             {
                 httpResponse.StatusCode = HttpStatusCode.NotModified;
+                httpResponse.StatusDescription = "Not Modified";
                 httpResponse.SuppressEntityBody = true;
-                return;
             }
 
-            var metadata = GetMetadata();
+            if (state.Metadata == null)
+                state.Metadata = GetMetadata();
 
-            if (metadata != null)
+            if (state.Metadata != null)
             {
-                httpResponse.Headers.Add("ETag", metadata.Token);
-                httpResponse.Headers.Add("Last-Modified", metadata.LastModified.ToUniversalTime().ToString("R"));
+                httpResponse.Headers.Add("ETag", state.Metadata.Token);
+                httpResponse.Headers.Add("Last-Modified", state.Metadata.LastModified.ToUniversalTime().ToString("R"));
             }
         }
 
@@ -71,6 +76,12 @@ namespace Touch.ServiceModel.Dispatcher
             if (cacheKey == null) return null;
 
             return service.GetMetadata(cacheKey);
+        }
+
+        private class CacheState
+        {
+            public GetState State;
+            public ICacheMetadata Metadata;
         }
 
         private enum GetState { Modified, Unmodified }

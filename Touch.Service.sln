@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.ServiceModel", "Touch.ServiceModel\Touch.ServiceModel.csproj", "{9A5BBDD8-28A5-40CF-8AFD-8A8A81D0E130}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageResizer.Touch", "ImageResizer.Touch\ImageResizer.Touch.csproj", "{146C9D0F-A47E-4923-9F27-D00F3FB520C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.ServiceModel.Caching", "Touch.ServiceModel.Caching\Touch.ServiceModel.Caching.csproj", "{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Touch.ServiceModel.NHibernate", "Touch.ServiceModel.NHibernate\Touch.ServiceModel.NHibernate.csproj", "{BA5A7F1C-C52C-40A6-9F8B-C79AEFB70C3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EB9D8B8-1FAF-4E53-B43B-57623B35CC17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA5A7F1C-C52C-40A6-9F8B-C79AEFB70C3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA5A7F1C-C52C-40A6-9F8B-C79AEFB70C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA5A7F1C-C52C-40A6-9F8B-C79AEFB70C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA5A7F1C-C52C-40A6-9F8B-C79AEFB70C3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

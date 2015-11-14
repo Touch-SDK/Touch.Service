@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Touch.ServiceModel.NHibernate</id>
+        <version>1.0.0</version>
+        <authors>Artem Abashev</authors>
+        <projectUrl>https://github.com/Touch-SDK/Touch.Service</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Touch SDK NHibernate service integration.</description>
+        <dependencies>
+            <dependency id="Touch" version="1.0.7" />
+            <dependency id="Touch.Persistence.NHibernate" version="1.0.6" />
+            <dependency id="Touch.ServiceModel" version="1.0.12" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\Touch.ServiceModel.NHibernate.dll" target="lib\Touch.ServiceModel.NHibernate.dll" />
+        <file src="bin\Release\Touch.ServiceModel.NHibernate.pdb" target="lib\Touch.ServiceModel.NHibernate.pdb" />
+    </files>
+</package>

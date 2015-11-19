@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authorization\AuthorizationServerExtensions.cs" />
+    <Compile Include="Authorization\DelegatedAuthorizationManager.cs" />
     <Compile Include="OAuth\IOAuth2CryptoService.cs" />
     <Compile Include="Authorization\OAuth2AuthorizationManager.cs" />
     <Compile Include="Authorization\OAuth2AuthorizationServer.cs" />

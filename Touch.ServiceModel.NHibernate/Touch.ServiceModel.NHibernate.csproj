@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="NHibernateMessageInspector.cs" />
     <Compile Include="NHibernateServiceBehavior.cs" />
+    <Compile Include="NHibernateUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

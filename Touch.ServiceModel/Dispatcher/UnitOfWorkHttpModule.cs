@@ -47,8 +47,8 @@ namespace Touch.ServiceModel
 
         public void Dispose()
         {
-            //_context.BeginRequest -= ContextBeginRequest;
-            //_context.EndRequest -= ContextEndRequest;
+            _context.BeginRequest -= ContextBeginRequest;
+            _context.EndRequest -= ContextEndRequest;
         }
         #endregion
 

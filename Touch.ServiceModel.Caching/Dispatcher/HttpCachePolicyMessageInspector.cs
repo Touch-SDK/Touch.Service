@@ -24,9 +24,14 @@ namespace Touch.ServiceModel.Dispatcher
 
             var cacheControl = GetCacheabilityString(_behavior.Cacheability);
 
-            if (!String.IsNullOrEmpty(cacheControl))
+            if (!string.IsNullOrEmpty(cacheControl))
             {
-                cacheControl += ",";
+                cacheControl += ", ";
+            }
+
+            if (_behavior.Duration.TotalSeconds == 0)
+            {
+                cacheControl += "must-revalidate, proxy-revalidate, ";
             }
 
             cacheControl += "max-age=" + _behavior.Duration.TotalSeconds.ToString(CultureInfo.InvariantCulture);
